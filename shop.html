@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>tagoplus Shop 기획</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="tagoplus 쇼핑몰 사용자(스토어프론트) 전체 화면을 담은 기획서 겸 클릭 가능한 HTML 프로토타입">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* tagoplus 스토어프론트 톤: 미니멀 패션몰(모노톤 + 포인트) / 상단 GNB·드롭다운, 라우팅, 장바구니 상태, 클릭 인터랙션 */
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f6f6f7; --surface-3:#eeeef0;
+  --line:#e6e6ea; --line-2:#d7d7dd;
+  --ink:#17171a; --ink-2:#44444a; --muted:#8a8a92; --faint:#aeaeb6;
+  --accent:#17171a; --accent-fg:#ffffff;
+  --new:#2f6df6; --best:#d6336c; --sale:#e8872b; --sold:#9aa0a8;
+  --point:#c0392b;
+  --radius:4px;
+  --disp:'Montserrat',system-ui,sans-serif;
+  --sans:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111113; --surface:#17171a; --surface-2:#1d1d21; --surface-3:#26262c;
+  --line:#2c2c33; --line-2:#3a3a43;
+  --ink:#ededf0; --ink-2:#c3c3cb; --muted:#8f8f99; --faint:#64646e;
+  --accent:#ededf0; --accent-fg:#111113;
+  --new:#5b8df0; --best:#e8679a; --sale:#e7a152; --sold:#6b7078; --point:#e8695c;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111113; --surface:#17171a; --surface-2:#1d1d21; --surface-3:#26262c;
+  --line:#2c2c33; --line-2:#3a3a43;
+  --ink:#ededf0; --ink-2:#c3c3cb; --muted:#8f8f99; --faint:#64646e;
+  --accent:#ededf0; --accent-fg:#111113;
+  --new:#5b8df0; --best:#e8679a; --sale:#e7a152; --sold:#6b7078; --point:#e8695c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{max-width:100%}
+.tnum{font-variant-numeric:tabular-nums}
+.en{font-family:var(--disp)}
+[hidden]{display:none!important}
+
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* utility bar */
+.util{border-bottom:1px solid var(--line);font-family:var(--disp);font-size:11px;letter-spacing:.06em}
+.util .wrap{display:flex;align-items:center;height:36px;gap:14px}
+.util .sp{flex:1}
+.util a,.util button{color:var(--muted);background:0;border:0;padding:0;font:inherit;letter-spacing:inherit}
+.util a:hover,.util button:hover{color:var(--ink)}
+.util .sepd{color:var(--line-2)}
+.util .cartc{color:var(--point);font-weight:700}
+
+/* header */
+.head .wrap{display:flex;align-items:center;gap:20px;padding-top:22px;padding-bottom:22px}
+.cs{flex:1;min-width:0}
+.cs .lb{font-family:var(--disp);font-size:10.5px;letter-spacing:.14em;color:var(--muted)}
+.cs .num{font-family:var(--disp);font-size:21px;font-weight:700;letter-spacing:.02em}
+.logo{display:flex;align-items:center;gap:8px;flex:none}
+.logo svg{display:block}
+.logo .wm{font-family:var(--disp);font-weight:700;font-size:25px;letter-spacing:.14em}
+.logo .wm b{font-weight:700}
+.search{flex:1;display:flex;justify-content:flex-end}
+.search .box{display:flex;align-items:center;border-bottom:1.5px solid var(--ink);width:min(240px,46vw)}
+.search input{flex:1;border:0;background:0;color:var(--ink);padding:6px 2px;font-size:13px;font-family:inherit;min-width:0}
+.search input:focus{outline:none}
+.search button{background:0;border:0;color:var(--ink);padding:4px}
+
+/* gnb */
+.gnb{border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;z-index:20;background:var(--bg)}
+.gnb .wrap{display:flex;align-items:stretch;justify-content:center;gap:0}
+.gnb .item{position:relative}
+.gnb .item>button{font-family:var(--disp);font-weight:600;font-size:13.5px;letter-spacing:.08em;background:0;border:0;color:var(--ink);
+  height:52px;padding:0 26px;display:flex;align-items:center}
+.gnb .item:hover>button{color:var(--point)}
+.gnb .drop{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--line);
+  min-width:130px;padding:8px 0;display:none;box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.gnb .item:hover .drop{display:block}
+.gnb .drop button{display:block;width:100%;text-align:center;background:0;border:0;color:var(--ink-2);font-size:12.5px;padding:7px 14px;white-space:nowrap}
+.gnb .drop button:hover{color:var(--point);background:var(--surface-2)}
+.gnb-mob{display:none}
+
+/* main */
+main{min-height:46vh;padding-bottom:40px}
+.crumb{font-family:var(--disp);font-size:11px;letter-spacing:.06em;color:var(--muted);padding:18px 0}
+.crumb b{color:var(--ink-2);font-weight:500}
+.page-title{text-align:center;padding:14px 0 6px}
+.page-title h1{font-family:var(--disp);font-size:30px;letter-spacing:.12em;font-weight:600}
+.page-title .ko{color:var(--muted);font-size:12px;margin-top:4px}
+
+/* spec note */
+.spec{display:flex;gap:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:14px 0 22px}
+.spec .tag{flex:none;align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.06em;background:var(--ink);color:var(--accent-fg);padding:3px 8px;border-radius:3px;font-family:var(--disp);margin-top:1px}
+.spec .body p{margin:0 0 5px;font-size:12.5px;font-weight:700;color:var(--ink)}
+.spec ul{margin:0;padding-left:16px;color:var(--ink-2);font-size:12px}
+.spec li{margin:2px 0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:46px;padding:0 22px;border:1px solid var(--ink);
+  background:var(--surface);color:var(--ink);font-size:13px;font-weight:500;border-radius:2px;letter-spacing:.02em}
+.btn:hover{background:var(--surface-2)}
+.btn.dark{background:var(--ink);color:var(--accent-fg)}
+.btn.dark:hover{opacity:.88}
+.btn.sm{height:34px;padding:0 13px;font-size:12px}
+.btn.full{width:100%}
+.btn.lg{height:52px;font-size:14px}
+
+/* hero */
+.hero{position:relative;height:clamp(320px,52vw,500px);background:linear-gradient(120deg,#cfc7bd,#9a9088 60%,#726a63);display:flex;align-items:center;overflow:hidden}
+:root[data-theme="dark"] .hero,:root:not([data-theme="light"]) .hero{filter:none}
+.hero .panel{background:rgba(255,255,255,.82);color:#1a1a1a;padding:40px 46px;margin-left:8%;max-width:420px;text-align:center}
+.hero .panel .en{font-size:34px;font-weight:700;letter-spacing:.14em}
+.hero .panel p{color:#555;font-size:14px;margin:12px 0 22px;line-height:1.7}
+.hero-dots{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:8px}
+.hero-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.6)}
+.hero-dots i.on{background:#fff}
+
+.sec-h{text-align:center;padding:40px 0 20px}
+.sec-h .en{font-family:var(--disp);font-size:22px;font-weight:600;letter-spacing:.14em}
+.sec-h .ko{color:var(--muted);font-size:12px;margin-top:5px}
+
+/* category quick */
+.catq{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:8px 0 10px}
+.catq button{background:0;border:1px solid var(--line);border-radius:var(--radius);padding:16px 6px;text-align:center;color:var(--ink)}
+.catq button:hover{border-color:var(--ink)}
+.catq .ic{width:26px;height:26px;margin:0 auto 7px;color:var(--ink-2)}
+.catq .en{font-family:var(--disp);font-size:11px;letter-spacing:.08em;font-weight:600}
+.catq .ko{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+/* product grid */
+.toolbar2{display:flex;align-items:center;justify-content:space-between;padding:6px 0 16px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.toolbar2 .cnt{font-size:12.5px;color:var(--muted)}
+.toolbar2 .cnt b{color:var(--ink)}
+.sort{display:flex;gap:14px;font-family:var(--disp);font-size:11px;letter-spacing:.04em}
+.sort button{background:0;border:0;color:var(--muted);padding:0}
+.sort button.on{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.subcat{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;padding:6px 0 4px}
+.subcat button{background:0;border:0;color:var(--muted);font-size:13px;padding:4px 14px;position:relative}
+.subcat button.on{color:var(--ink);font-weight:700}
+.subcat .sep{color:var(--line-2);align-self:center}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 18px}
+.pcard{display:block;cursor:pointer}
+.pimg{position:relative;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;display:grid;place-items:center;color:rgba(255,255,255,.9)}
+.pimg .ph{font-family:var(--disp);font-size:30px;font-weight:700;opacity:.5;letter-spacing:.1em}
+.pcard:hover .pimg{filter:brightness(.96)}
+.badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:5px}
+.bdg{font-family:var(--disp);font-size:9.5px;font-weight:700;letter-spacing:.05em;color:#fff;width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+.bdg.new{background:var(--new)} .bdg.best{background:var(--best)} .bdg.sale{background:var(--sale)}
+.soldout{position:absolute;inset:0;background:rgba(30,30,34,.45);display:grid;place-items:center;color:#fff;font-family:var(--disp);font-weight:700;letter-spacing:.1em;font-size:14px}
+.pname{margin-top:11px;font-size:13px;color:var(--ink);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pprice{margin-top:5px;font-family:var(--disp);display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pprice s{color:var(--faint);font-size:12px}
+.pprice b{font-size:15px;font-weight:700}
+.pprice em{color:var(--point);font-style:normal;font-weight:700;font-size:13px}
+
+.pager{display:flex;justify-content:center;gap:5px;padding:34px 0}
+.pager button{min-width:32px;height:32px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:2px;font-family:var(--disp);font-size:12px}
+.pager button.on{background:var(--ink);color:var(--accent-fg);border-color:var(--ink)}
+
+/* product detail */
+.pd{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding-top:8px}
+.pd-gallery .main{aspect-ratio:3/4;border-radius:var(--radius);display:grid;place-items:center;color:rgba(255,255,255,.6);font-family:var(--disp);font-size:46px;font-weight:700}
+.pd-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:9px}
+.pd-thumbs .t{aspect-ratio:1;border-radius:var(--radius);border:1px solid var(--line);cursor:pointer}
+.pd-thumbs .t.on{outline:2px solid var(--ink);outline-offset:1px}
+.pd-info h2{font-size:21px;font-weight:700;line-height:1.4}
+.pd-info .line{border-top:1px solid var(--line);margin:18px 0}
+.pd-dl{display:grid;grid-template-columns:92px 1fr;row-gap:11px;font-size:13px}
+.pd-dl dt{color:var(--muted)} .pd-dl dd{margin:0;color:var(--ink)}
+.pd-price b{font-family:var(--disp);font-size:24px;font-weight:700}
+.pd-price s{color:var(--faint);font-family:var(--disp);margin-right:8px}
+.pd-price em{color:var(--point);font-style:normal;font-weight:700;margin-left:8px;font-family:var(--disp)}
+.selbox{display:flex;flex-direction:column;gap:9px;margin:4px 0}
+.selbox select{height:42px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:2px;padding:0 10px;font-family:inherit;font-size:13px}
+.optline{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:10px 12px}
+.optline .nm{font-size:12.5px}
+.stepper{display:inline-flex;border:1px solid var(--line-2);border-radius:2px;overflow:hidden}
+.stepper button{width:30px;height:30px;border:0;background:var(--surface);color:var(--ink);font-size:15px}
+.stepper span{min-width:40px;display:grid;place-items:center;font-family:var(--disp);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.total-row{display:flex;align-items:baseline;justify-content:space-between;padding:16px 0;border-top:2px solid var(--ink);margin-top:14px}
+.total-row .t{font-size:13px;color:var(--muted)}
+.total-row .v{font-family:var(--disp);font-size:25px;font-weight:700}
+.total-row .v small{font-size:13px;font-weight:500}
+.pd-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pd-btns .wish{grid-column:1/-1}
+
+/* detail tabs */
+.dtabs{display:flex;border-bottom:1px solid var(--ink);margin:46px 0 0;font-family:var(--disp);font-size:12.5px;letter-spacing:.04em}
+.dtabs button{flex:1;background:0;border:0;color:var(--muted);padding:14px 6px;font:inherit;border-bottom:2px solid transparent;margin-bottom:-1px}
+.dtabs button.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.dpanel{padding:26px 0;min-height:140px}
+.dpanel .ph-det{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);min-height:260px;display:grid;place-items:center;color:var(--faint)}
+
+/* generic table (cart/board/mypage) */
+.ttl2{font-family:var(--disp);font-size:22px;letter-spacing:.1em;font-weight:600;text-align:center;padding:10px 0 20px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+.tbl-wrap{overflow-x:auto}
+thead th{border-top:2px solid var(--ink);border-bottom:1px solid var(--line);padding:12px 10px;font-size:12px;color:var(--ink-2);font-weight:700;white-space:nowrap}
+tbody td{border-bottom:1px solid var(--line);padding:14px 10px;color:var(--ink-2);vertical-align:middle}
+.cart-prod{display:flex;gap:12px;align-items:center;text-align:left}
+.cart-prod .th{width:60px;height:72px;border-radius:3px;flex:none}
+.cart-prod .nm{color:var(--ink);font-size:13px}
+.cart-prod .op{color:var(--muted);font-size:11.5px;margin-top:3px}
+.right{text-align:right} .center{text-align:center}
+.won b{font-family:var(--disp)}
+
+/* cart summary */
+.sumbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 26px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:22px 0}
+.sumbar .cell{text-align:center}
+.sumbar .cell .l{font-size:12px;color:var(--muted)}
+.sumbar .cell .v{font-family:var(--disp);font-size:22px;font-weight:700;margin-top:4px}
+.sumbar .op{font-size:22px;color:var(--faint)}
+.sumbar .cell.final .v{color:var(--point)}
+.cart-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 0 10px}
+
+.empty{text-align:center;padding:70px 20px;color:var(--muted)}
+.empty .ic{width:50px;height:50px;margin:0 auto 14px;color:var(--faint)}
+
+/* forms (login/join/order) */
+.narrow{max-width:460px;margin:0 auto}
+.narrow.wide{max-width:760px}
+.form-sec{border-top:2px solid var(--ink);margin-top:26px}
+.form-sec h3{font-size:15px;padding:16px 0 4px}
+.frow{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.frow>label{width:120px;flex:none;font-size:12.5px;color:var(--ink-2);padding-top:10px;font-weight:500}
+.frow>label .req{color:var(--point)}
+.fctl{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.inp{height:40px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:2px;padding:0 11px;font-size:13px;font-family:inherit;width:100%}
+.inp:focus{outline:1px solid var(--ink)}
+.row-inline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hint{font-size:11px;color:var(--muted)}
+.chk,.rad{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.box{width:16px;height:16px;border:1px solid var(--line-2);border-radius:3px;display:inline-grid;place-items:center;flex:none}
+.box.on{background:var(--ink);border-color:var(--ink);color:var(--accent-fg)}
+.rad .box{border-radius:50%}
+.loginbox{border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+.links-row{display:flex;justify-content:center;gap:14px;font-size:12px;color:var(--muted);padding:14px 0}
+.links-row span{color:var(--line-2)}
+.agree{border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.agree .doc{height:120px;overflow:auto;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:12px;font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.steps{display:flex;justify-content:center;gap:0;margin:8px 0 20px;font-family:var(--disp);font-size:11px;letter-spacing:.05em}
+.steps .st{display:flex;align-items:center;gap:8px;color:var(--faint)}
+.steps .st.on{color:var(--ink);font-weight:700}
+.steps .st .n{width:22px;height:22px;border-radius:50%;border:1px solid currentColor;display:grid;place-items:center}
+.steps .arw{margin:0 16px;color:var(--line-2)}
+
+.pay-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.pay-opts button{border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2);border-radius:3px;padding:14px 6px;font-size:12.5px}
+.pay-opts button.on{border-color:var(--ink);color:var(--ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--ink)}
+
+/* mypage */
+.mp{display:grid;grid-template-columns:200px 1fr;gap:30px;align-items:start}
+.mp-side{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.mp-side .u{padding:18px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.mp-side .u b{font-size:14px} .mp-side .u .g{font-size:11.5px;color:var(--muted);margin-top:2px}
+.mp-side button{display:flex;justify-content:space-between;width:100%;text-align:left;background:0;border:0;border-top:1px solid var(--line);color:var(--ink-2);padding:12px 16px;font-size:13px}
+.mp-side button:first-of-type{border-top:0}
+.mp-side button.on{color:var(--ink);font-weight:700;background:var(--surface-2)}
+.mp-side button .b{font-family:var(--disp);color:var(--point)}
+.mp-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.mp-cards .c{border:1px solid var(--line);border-radius:var(--radius);padding:15px;text-align:center}
+.mp-cards .c .l{font-size:12px;color:var(--muted)}
+.mp-cards .c .v{font-family:var(--disp);font-size:22px;font-weight:700;margin-top:6px}
+
+/* customer */
+.ctabs{display:flex;justify-content:center;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.ctabs button{background:0;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--muted);font-family:var(--disp);font-size:13px;letter-spacing:.05em;padding:12px 20px}
+.ctabs button.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:0;border:0;color:var(--ink);padding:16px 4px;font-size:13.5px}
+.faq-q .q{font-family:var(--disp);color:var(--point);font-weight:700;flex:none}
+.faq-q .cat{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 9px;flex:none}
+.faq-q .arw{margin-left:auto;color:var(--muted);transition:transform .2s}
+.faq-item.open .faq-q .arw{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 4px 18px 40px;color:var(--ink-2);font-size:13px}
+.faq-item.open .faq-a{display:block}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:40px;background:var(--surface-2)}
+footer .wrap{display:grid;grid-template-columns:1.3fr 1fr 1.4fr;gap:30px;padding-top:34px;padding-bottom:26px}
+footer h4{font-family:var(--disp);font-size:12px;letter-spacing:.1em;margin-bottom:12px}
+footer .cs2 .num{font-family:var(--disp);font-size:24px;font-weight:700}
+footer .cs2 .t{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.7}
+footer ul{list-style:none;margin:0;padding:0}
+footer li{font-size:12px;color:var(--ink-2);padding:3px 0;cursor:pointer}
+footer li:hover{color:var(--ink)}
+footer .co{font-size:11.5px;color:var(--muted);line-height:1.8}
+.copy{border-top:1px solid var(--line);font-family:var(--disp);font-size:10.5px;letter-spacing:.06em;color:var(--faint)}
+.copy .wrap{padding:14px 0}
+
+/* theme toggle in util */
+
+/* toast */
+#toasts{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;padding:0 12px}
+.toast{background:#1c1c20;color:#fff;padding:11px 18px;border-radius:4px;font-size:12.5px;box-shadow:0 8px 22px rgba(0,0,0,.26);transition:.28s}
+.toast.out{opacity:0;transform:translateY(8px)}
+.toast b{color:#f0b47f}
+/* modal */
+.ov-modal{position:fixed;inset:0;z-index:80;background:rgba(15,15,20,.5);display:flex;align-items:flex-start;justify-content:center;padding:50px 16px;overflow-y:auto}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:6px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-h h3{font-size:15px}.modal-h .x{background:0;border:0;color:var(--muted);font-size:20px;padding:2px 6px}
+.modal-b{padding:18px}
+.modal-f{display:flex;justify-content:flex-end;gap:8px;padding:14px 18px;border-top:1px solid var(--line);background:var(--surface-2)}
+
+@media (max-width:980px){
+  .pd{grid-template-columns:1fr;gap:26px}
+  .mp{grid-template-columns:1fr}
+  footer .wrap{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .grid{grid-template-columns:repeat(2,1fr);gap:20px 14px}
+  .catq{grid-template-columns:repeat(3,1fr)}
+  .cs,.search{flex:none;width:auto}
+  .head .wrap{flex-wrap:wrap;justify-content:center;gap:12px}
+  .search{width:100%}.search .box{width:100%}
+  .gnb .wrap{display:none}
+  .gnb-mob{display:flex;align-items:center;justify-content:space-between;height:48px}
+  .gnb-mob button{background:0;border:0;color:var(--ink);font-family:var(--disp);font-weight:600;letter-spacing:.06em}
+  .pay-opts{grid-template-columns:repeat(2,1fr)}
+  .mp-cards{grid-template-columns:repeat(2,1fr)}
+  footer .wrap{grid-template-columns:1fr}
+  .frow>label{width:92px}
+}
+@media (max-width:420px){.grid{grid-template-columns:1fr}.pd-btns{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="util"><div class="wrap">
+  <button data-go="customer">BOOKMARK</button>
+  <div class="sp"></div>
+  <button data-go="login">LOGIN</button><span class="sepd">|</span>
+  <button data-go="join">JOIN</button><span class="sepd">|</span>
+  <button data-go="cart">CART <span class="cartc" id="cartc">0</span></button><span class="sepd">|</span>
+  <button data-go="mypage">ORDER</button><span class="sepd">|</span>
+  <button id="theme">☾ THEME</button>
+</div></div>
+
+<header class="head"><div class="wrap">
+  <div class="cs"><div class="lb">CS CENTER</div><div class="num">1544-0835</div></div>
+  <a class="logo" data-go="home" href="#home">
+    <svg width="26" height="26" viewBox="0 0 28 28"><rect width="28" height="28" rx="7" fill="#17171a"/><path d="M15 6.2h-4.3A1.6 1.6 0 009.1 7.8v4.3a1.6 1.6 0 00.47 1.13l5.6 5.6a1.6 1.6 0 002.26 0l4.1-4.1a1.6 1.6 0 000-2.26l-5.6-5.6A1.6 1.6 0 0015 6.2z" fill="#fff"/><circle cx="11.6" cy="9.9" r="1.15" fill="#17171a"/><circle cx="21.2" cy="6.8" r="4.5" fill="#5aa85f" stroke="#fff" stroke-width="1.5"/><path d="M21.2 4.8v4M19.2 6.8h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span class="wm">tagoplus</span>
+  </a>
+  <div class="search"><div class="box"><input id="searchi" placeholder="검색어를 입력하세요"><button id="searchb" aria-label="검색"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></button></div></div>
+</div></header>
+
+<nav class="gnb"><div class="wrap" id="gnb"></div>
+  <div class="wrap gnb-mob"><button id="gnbmob">☰ CATEGORY</button><span class="en" style="font-size:12px;color:var(--muted)">tagoplus</span></div>
+</nav>
+
+<main><div class="wrap" id="view"></div></main>
+
+<footer>
+  <div class="wrap">
+    <div class="cs2"><h4>CUSTOMER CENTER</h4><div class="num">1544-0835</div><div class="t">평일 10:00 ~ 17:00 (점심 12:00~13:00)<br>주말·공휴일 휴무<br>무통장 입금계좌 : 국민 123-45-678900 (주)tagoplus</div></div>
+    <div><h4>SHOP MENU</h4><ul><li data-go="cat-OUTER">신상품</li><li data-go="cat-TOP">베스트</li><li data-go="cat-ACCESSORY">세일</li><li data-go="cart">장바구니</li><li data-go="mypage">마이페이지</li><li data-go="customer">고객센터</li></ul></div>
+    <div class="co"><h4>COMPANY INFO</h4>상호 (주)tagoplus &nbsp;|&nbsp; 대표 이범재<br>사업자등록번호 107-86-87689<br>통신판매업신고 제19-5147호<br>주소 서울시 영등포구 버드나루로 135, 8층<br>개인정보관리책임자 최병국 &nbsp;|&nbsp; TEL 1544-0835</div>
+  </div>
+  <div class="copy"><div class="wrap">COPYRIGHT © TAGOPLUS. ALL RIGHTS RESERVED. · 사용자 화면 프로토타입 (shop1.sinbiweb.net IA 기준)</div></div>
+</footer>
+<div id="toasts"></div>
+
+<script>
+/* ===== data ===== */
+const CATS=[
+ {key:'OUTER',ko:'아우터',subs:['자켓','점퍼','가디건']},
+ {key:'TOP',ko:'상의',subs:['티셔츠','블라우스','니트']},
+ {key:'BOTTOM',ko:'하의',subs:['바지','치마','레깅스']},
+ {key:'DRESS',ko:'원피스',subs:['원피스','투피스']},
+ {key:'ACCESSORY',ko:'악세서리',subs:['머플러','양말','가방','기타']},
+ {key:'SHOES',ko:'슈즈',subs:['플랫','슬립온','부츠']}
+];
+const COLORS=['#b8afa4','#8a8f99','#6f7a86','#9c8e86','#7d7a86','#a6957f','#878d84','#9a8a93','#767b8a','#ab9f94','#8f8577','#7a8580'];
+let PID=0;
+function mk(name,cat,sub,price,sale,badges){return {id:++PID,name,cat,sub,price,sale:sale||0,badges:badges||[],col:COLORS[PID%COLORS.length]};}
+const PRODUCTS=[
+ mk('오버핏 울 싱글 코트','OUTER','자켓',139000,98000,['new','best']),
+ mk('베이직 후드 집업','OUTER','점퍼',59000,0,['new']),
+ mk('램스울 라운드 가디건','OUTER','가디건',72000,49900,['sale']),
+ mk('캐시미어 터틀넥 니트','TOP','니트',68000,0,['best']),
+ mk('코튼 셔링 블라우스','TOP','블라우스',42000,0,['new']),
+ mk('베이직 라운드 티셔츠','TOP','티셔츠',19900,13900,['sale']),
+ mk('하이웨스트 와이드 슬랙스','BOTTOM','바지',54000,0,['best']),
+ mk('플리츠 미디 스커트','BOTTOM','치마',46000,0,['new']),
+ mk('기모 레깅스','BOTTOM','레깅스',24000,0,[]),
+ mk('플로럴 셔츠 원피스','DRESS','원피스',89000,69000,['best','sale']),
+ mk('니트 투피스 세트','DRESS','투피스',112000,0,['new']),
+ mk('소프트 울 머플러','ACCESSORY','머플러',29000,0,[]),
+ mk('데일리 레더 토트백','ACCESSORY','가방',98000,0,['best']),
+ mk('크루 삭스 3세트','ACCESSORY','양말',9900,0,[]),
+ mk('라운드 토 플랫슈즈','SHOES','플랫',64000,0,['new']),
+ mk('첼시 앵클 부츠','SHOES','부츠',118000,89000,['sale'])
+];
+PRODUCTS[2].sold=true; // 품절 예시
+const byId=id=>PRODUCTS.find(p=>p.id==id);
+const won=n=>'<span class="won"><b class="tnum">'+n.toLocaleString()+'</b>원</span>';
+const CART=[];
+function cartCount(){return CART.reduce((a,c)=>a+c.qty,0);}
+function updCart(){const e=document.getElementById('cartc');if(e)e.textContent=cartCount();}
+
+/* ===== shell: gnb + footer wiring ===== */
+function buildGnb(){
+ const g=document.getElementById('gnb');
+ g.innerHTML=CATS.map(c=>`<div class="item"><button data-go="cat-${c.key}">${c.key}</button><div class="drop">${c.subs.map(s=>`<button data-go="cat-${c.key}" data-sub="${s}">${s}</button>`).join('')}</div></div>`).join('')
+  +`<div class="item"><button data-go="customer">CUSTOMER</button><div class="drop"><button data-go="customer" data-ctab="공지사항">공지사항</button><button data-go="customer" data-ctab="Q&A">Q&amp;A</button><button data-go="customer" data-ctab="FAQ">FAQ</button></div></div>`;
+}
+
+/* ===== product card ===== */
+function badgeHtml(b){return b.map(x=>`<span class="bdg ${x}">${x.toUpperCase()}</span>`).join('');}
+function priceHtml(p){
+ if(p.sale){const pct=Math.round((1-p.sale/p.price)*100);return `<s class="tnum">${p.price.toLocaleString()}</s> <b class="tnum">${p.sale.toLocaleString()}</b> <em>${pct}%</em>`;}
+ return `<b class="tnum">${p.price.toLocaleString()}</b>`;
+}
+function card(p){
+ return `<a class="pcard" data-go="product-${p.id}"><div class="pimg" style="background:${p.col}">${p.badges.length?`<div class="badges">${badgeHtml(p.badges)}</div>`:''}<span class="ph">${p.name.slice(0,2)}</span>${p.sold?'<div class="soldout">SOLD OUT</div>':''}</div><div class="pname">${p.name}</div><div class="pprice">${priceHtml(p)}</div></a>`;
+}
+function grid(list){return `<div class="grid">${list.map(card).join('')}</div>`;}
+
+/* ===== spec note ===== */
+function spec(p,li){return `<div class="spec"><span class="tag">기획</span><div class="body"><p>${p}</p><ul>${li.map(x=>'<li>'+x+'</li>').join('')}</ul></div></div>`;}
+
+/* ===== views ===== */
+function vHome(){
+ const nw=PRODUCTS.filter(p=>p.badges.includes('new')).slice(0,4);
+ const best=PRODUCTS.filter(p=>p.badges.includes('best')).slice(0,4);
+ const sale=PRODUCTS.filter(p=>p.sale).slice(0,4);
+ return `<div class="spec" style="margin-top:18px"><span class="tag">기획</span><div class="body"><p>메인(홈) — 브랜드 비주얼 + 카테고리 진입 + 상품 큐레이션(신상품·베스트·세일)</p><ul><li>메인 비주얼 슬라이드 + CTA(바로가기)</li><li>카테고리 퀵 진입</li><li>NEW / BEST / SALE 상품 롤링</li></ul></div></div>
+ <div style="margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)))"><div class="hero"><div class="panel"><div class="en">tagoplus</div><p>무심한 듯 모던한 럭셔리 연출<br>나에게 아름다움을 입히다.</p><button class="btn dark" data-go="cat-OUTER">바로가기</button></div><div class="hero-dots"><i class="on"></i><i></i><i></i></div></div></div>
+ <div class="catq">${CATS.map(c=>`<button data-go="cat-${c.key}"><div class="ic">${catIcon(c.key)}</div><div class="en">${c.key}</div><div class="ko">${c.ko}</div></button>`).join('')}</div>
+ <div class="sec-h"><div class="en">NEW ARRIVALS</div><div class="ko">새로 입고된 신상품</div></div>${grid(nw)}
+ <div class="sec-h"><div class="en">BEST ITEM</div><div class="ko">가장 사랑받는 베스트</div></div>${grid(best)}
+ <div class="sec-h"><div class="en">SALE</div><div class="ko">지금이 구매 기회</div></div>${grid(sale)}
+ <p class="hint" style="text-align:center;padding:26px 0">※ 상품·이미지·가격은 레이아웃 확인용 샘플입니다.</p>`;
+}
+function catIcon(k){const m={OUTER:'M6 4l6 3 6-3 1 5-3 1v10H8V10L5 9z',TOP:'M8 4l4 2 4-2 4 4-3 2v10H7V10L4 8z',BOTTOM:'M8 3h8l1 18h-5l-1-9-1 9H7z',DRESS:'M9 3h6l-1 4 3 14H7l3-14z',ACCESSORY:'M5 9h14l-1 11H6zM9 9a3 3 0 016 0',SHOES:'M3 11l6-2 3 3h7a2 2 0 012 2v3H3z'};return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="${m[k]}"/></svg>`;}
+
+let catState={sub:'ALL',sort:'new'};
+function vCategory(key,sub){
+ const c=CATS.find(x=>x.key===key)||CATS[0];
+ catState.sub=sub||'ALL';
+ let list=PRODUCTS.filter(p=>p.cat===key);
+ if(catState.sub!=='ALL')list=list.filter(p=>p.sub===catState.sub);
+ if(catState.sort==='low')list=[...list].sort((a,b)=>(a.sale||a.price)-(b.sale||b.price));
+ if(catState.sort==='high')list=[...list].sort((a,b)=>(b.sale||b.price)-(a.sale||a.price));
+ const subtabs=['ALL',...c.subs];
+ return `<div class="crumb"><b data-go="home" style="cursor:pointer">HOME</b> › <b>${c.key}</b></div>
+ <div class="page-title"><h1>${c.key}</h1><div class="ko">${c.ko}</div></div>
+ ${spec('카테고리 상품목록 — 서브카테고리·정렬·상품 그리드',['서브카테고리 탭(ALL/'+c.subs.join('/')+')','정렬(신상품·낮은/높은 가격순)','NEW·BEST·SALE·SOLD OUT 배지','상품 클릭 → 상세'])}
+ <div class="subcat" id="subcat">${subtabs.map((s,i)=>`${i?'<span class="sep">/</span>':''}<button class="${s===catState.sub?'on':''}" data-subpick="${key}|${s}">${s}</button>`).join('')}</div>
+ <div class="toolbar2"><div class="cnt">총 <b class="tnum">${list.length}</b>개</div><div class="sort"><button data-sort="new" class="${catState.sort==='new'?'on':''}">신상품순</button><button data-sort="low" class="${catState.sort==='low'?'on':''}">낮은 가격순</button><button data-sort="high" class="${catState.sort==='high'?'on':''}">높은 가격순</button></div></div>
+ ${list.length?grid(list):'<div class="empty">해당 분류의 상품이 없습니다.</div>'}
+ <div class="pager"><button>‹</button><button class="on">1</button><button>2</button><button>›</button></div>`;
+}
+
+let pdState={qty:1,tab:'DETAIL'};
+function vProduct(id){
+ const p=byId(id);if(!p)return vHome();
+ pdState={qty:1,tab:'DETAIL',size:'',color:''};
+ const price=p.sale||p.price;
+ const rel=PRODUCTS.filter(x=>x.cat===p.cat&&x.id!==p.id).slice(0,4);
+ return `<div class="crumb"><b data-go="home" style="cursor:pointer">HOME</b> › <b data-go="cat-${p.cat}" style="cursor:pointer">${p.cat}</b> › <b>${p.name}</b></div>
+ ${spec('상품 상세 — 이미지·옵션 선택·구매 / 상세·후기·문의 탭',['정상가/판매가/할인율·적립금·배송비','옵션(사이즈·색상) + 수량 선택','장바구니·바로구매·관심상품','DETAIL / REVIEW / Q&A / 배송·교환·반품 탭'])}
+ <div class="pd">
+   <div class="pd-gallery"><div class="main" id="pdmain" style="background:${p.col}">${p.name.slice(0,2)}</div><div class="pd-thumbs">${[0,1,2,3].map(i=>`<div class="t ${i===0?'on':''}" data-thumb="${i}" style="background:${COLORS[(p.id+i)%COLORS.length]}"></div>`).join('')}</div></div>
+   <div class="pd-info">
+     <h2>${p.name}</h2><div class="line"></div>
+     <div class="pd-dl">
+       <dt>판매가</dt><dd class="pd-price">${p.sale?`<s class="tnum">${p.price.toLocaleString()}원</s>`:''}<b class="tnum">${price.toLocaleString()}원</b>${p.sale?`<em>${Math.round((1-p.sale/p.price)*100)}%</em>`:''}</dd>
+       <dt>적립금</dt><dd>${won(Math.round(price*0.01))} (1%)</dd>
+       <dt>배송비</dt><dd>3,000원 <span class="hint">(50,000원 이상 무료배송)</span></dd>
+       <dt>원산지</dt><dd>대한민국</dd>
+     </div>
+     <div class="line"></div>
+     <div class="selbox">
+       <select id="selSize"><option value="">[필수] 사이즈 선택</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+       <select id="selColor"><option value="">[필수] 색상 선택</option><option>블랙</option><option>아이보리</option><option>베이지</option></select>
+     </div>
+     <div id="optarea"></div>
+     <div class="total-row"><span class="t">총 상품금액</span><span class="v" id="pdtotal">${price.toLocaleString()}<small>원</small></span></div>
+     <div class="pd-btns">
+       <button class="btn dark lg" data-pdbuy="now">바로구매</button>
+       <button class="btn lg" data-pdbuy="cart">장바구니</button>
+       <button class="btn wish" data-pdwish>♡ 관심상품</button>
+     </div>
+   </div>
+ </div>
+ <div class="dtabs">${['DETAIL','REVIEW','Q&A','배송/교환/반품'].map((t,i)=>`<button class="${i===0?'on':''}" data-pdtab="${t}">${t}</button>`).join('')}</div>
+ <div class="dpanel" id="dpanel">${pdPanel('DETAIL')}</div>
+ <div class="sec-h"><div class="en">RELATED ITEMS</div><div class="ko">함께 보면 좋은 상품</div></div>${grid(rel)}`;
+}
+function pdPanel(tab){
+ if(tab==='DETAIL')return `<div class="ph-det">상품 상세 이미지 영역 (에디터 등록 콘텐츠)</div>`;
+ if(tab==='REVIEW')return boardMini('상품후기',['번호','평점','제목','작성자','등록일'],[['★★★★★','사이즈 딱 맞아요','김서연','2026-08-10'],['★★★★☆','색감 예뻐요','박준호','2026-08-02']],'후기쓰기');
+ if(tab==='Q&A')return boardMini('상품문의',['번호','상태','제목','작성자','등록일'],[['답변완료','사이즈 문의드려요','이하늘','2026-08-11'],['미답변','재입고 되나요?','정민재','2026-08-05']],'문의하기');
+ return `<div style="font-size:13px;color:var(--ink-2);line-height:2"><b>배송 안내</b><br>· 평균 1~3일 이내 출고 / 50,000원 이상 무료배송<br><br><b>교환 및 반품</b><br>· 상품 수령 후 7일 이내 신청<br>· 단순변심 시 왕복 배송비 고객 부담<br>· 착용 흔적·택 제거 시 교환/반품 불가</div>`;
+}
+function boardMini(title,cols,rows,btn){
+ let ri=rows.length;
+ return `<div class="tbl-wrap"><table><thead><tr>${cols.map(c=>'<th>'+c+'</th>').join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="center">${ri-i}</td>${r.map((c,ci)=>`<td class="${ci===1?'':'center'}" style="${ci===1?'text-align:left;color:var(--ink)':''}">${c.startsWith('★')?`<span style="color:var(--sale)">${c}</span>`:(c==='답변완료'?'<span style="color:var(--new)">답변완료</span>':c==='미답변'?'<span style="color:var(--point)">미답변</span>':c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div style="text-align:right;padding-top:14px"><button class="btn sm" data-act="toast" data-msg="${btn}">${btn}</button></div>`;
+}
+
+function vCart(){
+ if(!CART.length)return `<div class="ttl2">SHOPPING CART</div>${spec('장바구니 — 담은 상품 확인·수량 변경·주문',['선택/상품정보/수량/판매가/합계','결제예상금액(상품금액+배송비)','주문하기 → 주문서'])}<div class="empty"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h2l2 12h11l2-8H6"/><circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg></div>장바구니에 담긴 상품이 없습니다.<div style="margin-top:16px"><button class="btn dark" data-go="home">쇼핑 계속하기</button></div></div>`;
+ let goods=CART.reduce((a,c)=>a+c.price*c.qty,0);
+ let ship=goods>=50000?0:3000;
+ const rows=CART.map((c,i)=>`<tr><td class="center"><span class="box on">✓</span></td><td><div class="cart-prod"><div class="th" style="background:${c.col}"></div><div><div class="nm">${c.name}</div><div class="op">${c.opt||'옵션: 기본'}</div></div></div></td>
+   <td class="center"><div class="stepper" data-cartqty="${i}"><button data-d="-1">−</button><span>${c.qty}</span><button data-d="1">+</button></div></td>
+   <td class="right">${won(c.price)}</td><td class="right">${won(c.price*c.qty)}</td>
+   <td class="center"><button class="btn sm" data-cartdel="${i}">삭제</button></td></tr>`).join('');
+ return `<div class="ttl2">SHOPPING CART</div>${spec('장바구니 — 담은 상품 확인·수량 변경·주문',['선택/상품정보/수량/판매가/합계','결제예상금액(상품금액+배송비)','주문하기 → 주문서'])}
+ <div class="tbl-wrap"><table><thead><tr><th style="width:44px">선택</th><th>상품정보</th><th style="width:120px">수량</th><th class="right" style="width:120px">판매가</th><th class="right" style="width:120px">합계</th><th style="width:70px"></th></tr></thead><tbody>${rows}</tbody></table></div>
+ <div class="sumbar"><div class="cell"><div class="l">총 상품금액</div><div class="v tnum">${goods.toLocaleString()}</div></div><div class="op">+</div><div class="cell"><div class="l">배송비</div><div class="v tnum">${ship.toLocaleString()}</div></div><div class="op">=</div><div class="cell final"><div class="l">결제예상금액</div><div class="v tnum">${(goods+ship).toLocaleString()}</div></div></div>
+ <div class="cart-btns"><button class="btn" data-go="home">쇼핑 계속하기</button><button class="btn dark lg" data-go="order">주문하기 (${cartCount()})</button></div>`;
+}
+
+function vOrder(){
+ if(!CART.length)return vCart();
+ let goods=CART.reduce((a,c)=>a+c.price*c.qty,0),ship=goods>=50000?0:3000;
+ return `<div class="ttl2">ORDER / CHECKOUT</div>${spec('주문서 — 주문상품·주문자/배송지·결제수단·약관',['배송지 정보 입력(우편번호 찾기)','적립금/쿠폰 사용','결제수단(무통장·카드·네이버/카카오페이)','약관 동의 후 결제'])}
+ <div class="narrow wide">
+   <div class="form-sec"><h3>주문 상품</h3>${CART.map(c=>`<div class="frow"><div class="cart-prod" style="flex:1"><div class="th" style="background:${c.col}"></div><div><div class="nm">${c.name}</div><div class="op">${c.opt||'옵션: 기본'} / ${c.qty}개</div></div></div><div style="align-self:center" class="tnum">${won(c.price*c.qty)}</div></div>`).join('')}</div>
+   <div class="form-sec"><h3>주문자 정보</h3>
+     <div class="frow"><label>이름 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="주문자 이름"></div></div>
+     <div class="frow"><label>휴대폰 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="010-0000-0000"></div></div>
+     <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="email@tagoplus.com"></div></div>
+   </div>
+   <div class="form-sec"><h3>배송지 정보</h3>
+     <div class="frow"><label>받는분 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="수령인"></div></div>
+     <div class="frow"><label>주소 <span class="req">*</span></label><div class="fctl"><div class="row-inline"><input class="inp" style="max-width:130px" placeholder="우편번호"><button class="btn sm" data-act="toast" data-msg="우편번호 찾기">우편번호 찾기</button></div><input class="inp" placeholder="기본주소"><input class="inp" placeholder="상세주소"></div></div>
+     <div class="frow"><label>배송 메모</label><div class="fctl"><select class="inp"><option>배송 메모를 선택하세요</option><option>부재 시 경비실에 맡겨주세요</option><option>배송 전 연락 바랍니다</option><option>직접 입력</option></select></div></div>
+   </div>
+   <div class="form-sec"><h3>할인 / 적립</h3>
+     <div class="frow"><label>적립금</label><div class="fctl"><div class="row-inline"><input class="inp" style="max-width:160px" placeholder="0" class="tnum"><button class="btn sm" data-act="toast" data-msg="적립금 전액 사용">전액사용</button><span class="hint">보유 1,250원</span></div></div></div>
+     <div class="frow"><label>쿠폰</label><div class="fctl"><select class="inp"><option>사용 가능 쿠폰 (1)</option><option>신규가입 5,000원 할인</option></select></div></div>
+   </div>
+   <div class="form-sec"><h3>결제 수단</h3>
+     <div style="padding:14px 0"><div class="pay-opts">${['무통장입금','신용카드','네이버페이','카카오페이'].map((p,i)=>`<button class="${i===0?'on':''}" data-pay>${p}</button>`).join('')}</div></div>
+     <div class="frow"><label class="chk" data-check><span class="box on">✓</span> 주문 내용을 확인했으며 결제에 동의합니다.</label></div>
+   </div>
+   <div class="sumbar"><div class="cell"><div class="l">상품금액</div><div class="v tnum">${goods.toLocaleString()}</div></div><div class="op">+</div><div class="cell"><div class="l">배송비</div><div class="v tnum">${ship.toLocaleString()}</div></div><div class="op">=</div><div class="cell final"><div class="l">최종 결제금액</div><div class="v tnum">${(goods+ship).toLocaleString()}</div></div></div>
+   <div style="padding:6px 0 10px"><button class="btn dark full lg" data-act="pay">${(goods+ship).toLocaleString()}원 결제하기</button></div>
+ </div>`;
+}
+
+function vLogin(){
+ return `<div class="ttl2">LOGIN</div>${spec('로그인 — 회원 로그인 + 비회원 주문조회',['아이디/비밀번호/아이디 저장','아이디·비밀번호 찾기, 회원가입','비회원 주문조회(주문자/주문번호/연락처)'])}
+ <div class="narrow">
+   <div class="loginbox">
+     <div class="fctl" style="gap:9px"><input class="inp" placeholder="아이디"><input class="inp" type="password" placeholder="비밀번호"></div>
+     <label class="chk" data-check style="margin:12px 0"><span class="box on">✓</span> 아이디 저장</label>
+     <button class="btn dark full lg" data-act="toast" data-msg="로그인">로그인</button>
+     <div class="links-row"><button style="background:0;border:0;color:inherit" data-go="join">회원가입</button><span>|</span><button style="background:0;border:0;color:inherit" data-act="toast" data-msg="아이디 찾기">아이디 찾기</button><span>|</span><button style="background:0;border:0;color:inherit" data-act="toast" data-msg="비밀번호 찾기">비밀번호 찾기</button></div>
+   </div>
+   <div class="form-sec"><h3>비회원 주문조회</h3>
+     <div class="frow"><label>주문자</label><div class="fctl"><input class="inp" placeholder="주문자 이름"></div></div>
+     <div class="frow"><label>주문번호</label><div class="fctl"><input class="inp" placeholder="주문번호"></div></div>
+     <div class="frow"><label>연락처</label><div class="fctl"><input class="inp" placeholder="010-0000-0000"></div></div>
+     <div style="padding:14px 0"><button class="btn full" data-go="mypage">주문조회</button></div>
+   </div>
+ </div>`;
+}
+
+let joinStep=1;
+function vJoin(){
+ return `<div class="ttl2">JOIN</div>${spec('회원가입 — 약관동의 → 정보입력 → 가입완료',['이용약관·개인정보 수집 동의(전체동의)','아이디 중복확인·비밀번호·이메일·주소','SMS/이메일 수신 동의','3단계 스텝 진행'])}
+ <div class="narrow wide"><div class="steps"><div class="st ${joinStep>=1?'on':''}"><span class="n">1</span> 약관동의</div><span class="arw">›</span><div class="st ${joinStep>=2?'on':''}"><span class="n">2</span> 정보입력</div><span class="arw">›</span><div class="st ${joinStep>=3?'on':''}"><span class="n">3</span> 가입완료</div></div>
+ <div id="joinbody">${joinStep===1?joinAgree():joinStep===2?joinForm():joinDone()}</div></div>`;
+}
+function joinAgree(){
+ return `<div class="agree"><h3 style="font-size:14px;margin-bottom:10px">이용약관</h3><div class="doc">제1조(목적) 본 약관은 tagoplus(이하 "회사")가 제공하는 전자상거래 관련 서비스의 이용조건 및 절차에 관한 사항을 규정함을 목적으로 합니다. …</div><label class="rad" data-check><span class="box on"></span> 이용약관에 동의합니다.</label></div>
+ <div class="agree"><h3 style="font-size:14px;margin-bottom:10px">개인정보 수집·이용 동의</h3><div class="doc">수집 항목: 아이디, 비밀번호, 이름, 연락처, 이메일, 주소 / 수집 목적: 회원관리, 주문·배송, 고객상담 / 보유기간: 회원 탈퇴 시까지 …</div><label class="rad" data-check><span class="box on"></span> 개인정보 수집·이용에 동의합니다.</label></div>
+ <label class="chk" data-check style="padding:8px 2px;font-weight:700"><span class="box on">✓</span> 모두 확인하였으며 전체 동의합니다.</label>
+ <div style="display:flex;gap:9px;padding:16px 0"><button class="btn" data-go="home">취소</button><button class="btn dark" style="flex:1" data-joinnext>다음 단계</button></div>`;
+}
+function joinForm(){
+ return `<div class="form-sec"><h3>기본 정보</h3>
+   <div class="frow"><label>아이디 <span class="req">*</span></label><div class="fctl"><div class="row-inline"><input class="inp" style="max-width:220px" placeholder="영문/숫자 4~16자"><button class="btn sm" data-act="toast" data-msg="아이디 중복확인">중복확인</button></div></div></div>
+   <div class="frow"><label>비밀번호 <span class="req">*</span></label><div class="fctl"><input class="inp" type="password" placeholder="8자 이상"></div></div>
+   <div class="frow"><label>비밀번호 확인 <span class="req">*</span></label><div class="fctl"><input class="inp" type="password" placeholder="비밀번호 재입력"></div></div>
+   <div class="frow"><label>이름 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="이름"></div></div>
+   <div class="frow"><label>휴대폰 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="010-0000-0000"></div></div>
+   <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="email@tagoplus.com"></div></div>
+   <div class="frow"><label>주소</label><div class="fctl"><div class="row-inline"><input class="inp" style="max-width:130px" placeholder="우편번호"><button class="btn sm" data-act="toast" data-msg="우편번호 찾기">우편번호 찾기</button></div><input class="inp" placeholder="기본주소"><input class="inp" placeholder="상세주소"></div></div>
+ </div>
+ <div class="form-sec"><h3>부가 정보</h3>
+   <div class="frow"><label>성별</label><div class="fctl"><div class="row-inline"><label class="rad" data-check><span class="box"></span> 남</label><label class="rad" data-check><span class="box"></span> 여</label></div></div></div>
+   <div class="frow"><label>수신 동의</label><div class="fctl"><div class="row-inline"><label class="chk" data-check><span class="box on">✓</span> SMS 수신</label><label class="chk" data-check><span class="box on">✓</span> 이메일 수신</label></div><span class="hint">할인·이벤트 소식을 받아보실 수 있습니다.</span></div></div>
+ </div>
+ <div style="display:flex;gap:9px;padding:16px 0"><button class="btn" data-joinback>이전</button><button class="btn dark" style="flex:1" data-joinnext>가입하기</button></div>`;
+}
+function joinDone(){
+ return `<div class="empty"><div class="ic" style="color:var(--new)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div><b style="color:var(--ink);font-size:16px">회원가입이 완료되었습니다.</b><div style="margin-top:8px">tagoplus의 다양한 혜택을 만나보세요. (데모)</div><div style="margin-top:18px;display:flex;gap:9px;justify-content:center"><button class="btn dark" data-go="home">쇼핑 시작하기</button><button class="btn" data-go="login">로그인</button></div></div>`;
+}
+
+let mpTab='주문내역';
+function vMypage(){
+ const menu=[['주문내역','3'],['적립금','1,250'],['관심상품','5'],['쿠폰','1'],['1:1 문의','0'],['회원정보수정','']];
+ return `<div class="ttl2">MY PAGE</div>${spec('마이페이지 — 주문·적립금·관심상품·문의·회원정보',['주문내역 및 배송현황 조회','적립금/쿠폰 확인','관심상품(찜), 1:1 문의','회원정보 수정'])}
+ <div class="mp"><div class="mp-side"><div class="u"><b>최고객님</b><div class="g">일반회원 · welcome@tagoplus</div></div>${menu.map(m=>`<button class="${m[0]===mpTab?'on':''}" data-mptab="${m[0]}">${m[0]} ${m[1]?`<span class="b tnum">${m[1]}</span>`:''}</button>`).join('')}</div>
+ <div class="mp-main">${mpContent()}</div></div>`;
+}
+function mpContent(){
+ if(mpTab==='주문내역'){
+   const st=[['2026-08-12','배송완료','p'],['2026-08-02','배송중','w'],['2026-07-20','결제완료','i']];
+   return `<div class="mp-cards"><div class="c"><div class="l">주문/배송</div><div class="v tnum">3</div></div><div class="c"><div class="l">적립금</div><div class="v tnum">1,250</div></div><div class="c"><div class="l">쿠폰</div><div class="v tnum">1</div></div><div class="c"><div class="l">관심상품</div><div class="v tnum">5</div></div></div>
+   <div class="tbl-wrap"><table><thead><tr><th>주문일자</th><th>주문번호</th><th>상품정보</th><th class="right">결제금액</th><th class="center">주문상태</th></tr></thead><tbody>${st.map((s,i)=>`<tr><td class="center tnum">${s[0]}</td><td class="center"><span class="en">2026${(812-i).toString()}001</span></td><td><div class="cart-prod"><div class="th" style="background:${COLORS[i]}"></div><div class="nm">${PRODUCTS[i].name} 외 ${i}건</div></div></td><td class="right">${won([98000,68000,89000][i])}</td><td class="center"><span style="color:var(--${s[2]==='p'?'new':s[2]==='w'?'sale':'muted'})">${s[1]}</span></td></tr>`).join('')}</tbody></table></div>
+   <p class="hint" style="padding-top:12px">배송현황: 입금대기 → 결제완료 → 배송준비 → 배송중 → 배송완료</p>`;
+ }
+ if(mpTab==='관심상품')return grid(PRODUCTS.filter(p=>p.badges.includes('best')).slice(0,4));
+ if(mpTab==='적립금')return `<div class="mp-cards"><div class="c"><div class="l">보유 적립금</div><div class="v tnum" style="color:var(--point)">1,250</div></div><div class="c"><div class="l">총 적립</div><div class="v tnum">4,300</div></div><div class="c"><div class="l">사용</div><div class="v tnum">3,050</div></div><div class="c"><div class="l">소멸예정</div><div class="v tnum">0</div></div></div><div class="tbl-wrap"><table><thead><tr><th>일자</th><th>내용</th><th class="right">변동</th><th class="right">잔액</th></tr></thead><tbody><tr><td class="center">2026-08-12</td><td>구매확정 적립</td><td class="right" style="color:var(--new)">+980</td><td class="right tnum">1,250</td></tr><tr><td class="center">2026-07-20</td><td>주문 사용</td><td class="right" style="color:var(--point)">-500</td><td class="right tnum">270</td></tr></tbody></table></div>`;
+ if(mpTab==='회원정보수정')return `<div class="form-sec"><h3>회원 정보</h3><div class="frow"><label>아이디</label><div class="fctl"><input class="inp" value="welcome" disabled style="max-width:220px"></div></div><div class="frow"><label>이름</label><div class="fctl"><input class="inp" value="최고객" style="max-width:220px"></div></div><div class="frow"><label>휴대폰</label><div class="fctl"><input class="inp" value="010-1234-5678" style="max-width:220px"></div></div><div class="frow"><label>이메일</label><div class="fctl"><input class="inp" value="welcome@tagoplus.com"></div></div></div><div style="padding:16px 0"><button class="btn dark" data-act="toast" data-msg="회원정보 저장">저장</button></div>`;
+ return `<div class="empty">${mpTab} 내역이 없습니다.</div>`;
+}
+
+let cTab='공지사항';
+function vCustomer(tab){
+ cTab=tab||cTab;
+ const tabs=['공지사항','Q&A','FAQ'];
+ let body;
+ if(cTab==='공지사항'){
+   const rows=[['tagoplus 추석 연휴 배송 안내','2026-09-10',342],['개인정보처리방침 개정 안내','2026-08-20',128],['가을 신상품 입고 소식','2026-08-05',510]];
+   body=`<div class="tbl-wrap"><table><thead><tr><th style="width:60px">번호</th><th>제목</th><th style="width:110px">등록일</th><th style="width:70px">조회</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="center">${rows.length-i}</td><td style="color:var(--ink);cursor:pointer" data-act="toast" data-msg="게시글 보기">${r[0]}</td><td class="center tnum">${r[1]}</td><td class="center tnum">${r[2]}</td></tr>`).join('')}</tbody></table></div>`;
+ } else if(cTab==='Q&A'){
+   const rows=[['답변완료','주문 취소하고 싶어요','김서연','2026-08-12'],['미답변','교환 신청은 어떻게 하나요?','이하늘','2026-08-09'],['답변완료','적립금 소멸 기준이 궁금해요','정민재','2026-08-01']];
+   body=`<div style="text-align:right;padding-bottom:12px"><button class="btn sm dark" data-go="login">1:1 문의하기</button></div><div class="tbl-wrap"><table><thead><tr><th style="width:60px">번호</th><th style="width:90px">상태</th><th>제목</th><th style="width:90px">작성자</th><th style="width:110px">등록일</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="center">${rows.length-i}</td><td class="center">${r[0]==='답변완료'?'<span style="color:var(--new)">답변완료</span>':'<span style="color:var(--point)">미답변</span>'}</td><td style="color:var(--ink);cursor:pointer" data-act="toast" data-msg="문의 보기">${r[1]}</td><td class="center">${r[2]}</td><td class="center tnum">${r[3]}</td></tr>`).join('')}</tbody></table></div>`;
+ } else {
+   const faqs=[['배송','주문 후 배송까지 얼마나 걸리나요?','결제 완료 후 평균 1~3일 이내 출고되며, 택배사 사정에 따라 1~2일 추가될 수 있습니다.'],['교환/반품','단순 변심으로 반품이 가능한가요?','상품 수령 후 7일 이내 가능하며, 왕복 배송비는 고객 부담입니다. 착용 흔적이 있으면 불가합니다.'],['회원','적립금은 어떻게 사용하나요?','주문서의 적립금 입력란에 사용 금액을 입력하면 결제금액에서 차감됩니다. 최소 사용금액이 있을 수 있습니다.'],['결제','무통장 입금 계좌는 어디서 확인하나요?','주문 시 안내되는 계좌로 입금하시면 되며, 입금자명이 주문자와 다를 경우 고객센터로 알려주세요.']];
+   body=`<div>${faqs.map((f,i)=>`<div class="faq-item"><button class="faq-q" data-faq="${i}"><span class="q">Q</span><span class="cat">${f[0]}</span><span>${f[1]}</span><span class="arw">▾</span></button><div class="faq-a">${f[2]}</div></div>`).join('')}</div>`;
+ }
+ return `<div class="ttl2">CUSTOMER CENTER</div>${spec('고객센터 — 공지사항 · Q&A · FAQ',['공지사항 목록(번호/제목/등록일/조회)','Q&A 1:1 문의(상태·작성자)','FAQ 카테고리별 아코디언'])}
+ <div class="ctabs">${tabs.map(t=>`<button class="${t===cTab?'on':''}" data-ctab="${t}">${t==='공지사항'?'NOTICE':t==='Q&A'?'Q&A':'FAQ'}</button>`).join('')}</div>${body}`;
+}
+
+/* ===== router ===== */
+const view=document.getElementById('view');
+function render(route){
+ let html;
+ if(route==='home'||!route)html=vHome();
+ else if(route.startsWith('cat-'))html=vCategory(route.slice(4));
+ else if(route.startsWith('product-'))html=vProduct(route.slice(8));
+ else if(route==='cart')html=vCart();
+ else if(route==='order')html=vOrder();
+ else if(route==='login')html=vLogin();
+ else if(route==='join'){joinStep=1;html=vJoin();}
+ else if(route==='mypage')html=vMypage();
+ else if(route==='customer')html=vCustomer();
+ else html=vHome();
+ view.innerHTML=html;
+ window.scrollTo(0,0);
+}
+function go(route){ try{location.hash=route;}catch(e){} render(route); }
+
+/* ===== interactions ===== */
+function toast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML=msg;document.getElementById('toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),320);},2100);}
+let modalEl=null;
+function closeModal(){if(modalEl){modalEl.remove();modalEl=null;}}
+function modal(title,body,btns){closeModal();const foot=btns.map((b,i)=>`<button class="btn ${b.cls||'sm'}" data-mi="${i}">${b.label}</button>`).join('');modalEl=document.createElement('div');modalEl.className='ov-modal';modalEl.innerHTML=`<div class="modal-box"><div class="modal-h"><h3>${title}</h3><button class="x" data-close>×</button></div><div class="modal-b">${body}</div><div class="modal-f">${foot}</div></div>`;document.body.appendChild(modalEl);modalEl.addEventListener('click',e=>{if(e.target===modalEl||e.target.hasAttribute('data-close'))closeModal();const mi=e.target.closest('[data-mi]');if(mi){const b=btns[+mi.dataset.mi];closeModal();if(b.on)b.on();}});}
+
+function currentProductAdd(mode){
+ const route=(location.hash||'').replace('#','');
+ const p=byId(route.slice(8));if(!p)return;
+ const size=document.getElementById('selSize'),color=document.getElementById('selColor');
+ if(!size.value||!color.value){toast('사이즈와 색상을 선택해 주세요');return;}
+ CART.push({name:p.name,price:p.sale||p.price,qty:pdState.qty,opt:`${size.value} / ${color.value}`,col:p.col});
+ updCart();
+ if(mode==='now'){go('order');}
+ else{modal('장바구니 담기 완료',`<div style="font-size:13.5px">선택하신 상품을 장바구니에 담았습니다. <b>(데모)</b></div>`,[{label:'계속 쇼핑',cls:'sm'},{label:'장바구니 이동',cls:'sm dark',on:()=>go('cart')}]);}
+}
+function pdRecalc(){const route=(location.hash||'').replace('#','');const p=byId(route.slice(8));if(!p)return;const price=p.sale||p.price;const el=document.getElementById('pdtotal');if(el)el.innerHTML=(price*pdState.qty).toLocaleString()+'<small>원</small>';}
+
+document.addEventListener('click',function(e){
+ const nav=e.target.closest('[data-go]');
+ if(nav){const sub=nav.dataset.sub,ctab=nav.dataset.ctab;go(nav.dataset.go);
+   if(sub){catState.sub=sub;const key=nav.dataset.go.slice(4);view.innerHTML=vCategory(key,sub);}
+   if(ctab){view.innerHTML=vCustomer(ctab);}
+   return;}
+ const subpick=e.target.closest('[data-subpick]');
+ if(subpick){const[key,s]=subpick.dataset.subpick.split('|');view.innerHTML=vCategory(key,s);return;}
+ const sort=e.target.closest('[data-sort]');
+ if(sort){catState.sort=sort.dataset.sort;const route=(location.hash||'').replace('#','');if(route.startsWith('cat-'))view.innerHTML=vCategory(route.slice(4),catState.sub);return;}
+ const thumb=e.target.closest('[data-thumb]');
+ if(thumb){thumb.parentElement.querySelectorAll('.t').forEach(t=>t.classList.remove('on'));thumb.classList.add('on');const m=document.getElementById('pdmain');if(m)m.style.background=thumb.style.background;return;}
+ const qa=e.target.closest('[data-cartqty] button');
+ if(qa){const wrap=qa.closest('[data-cartqty]');const i=+wrap.dataset.cartqty;CART[i].qty=Math.max(1,CART[i].qty+ +qa.dataset.d);updCart();view.innerHTML=vCart();return;}
+ const cd=e.target.closest('[data-cartdel]');
+ if(cd){CART.splice(+cd.dataset.cartdel,1);updCart();view.innerHTML=vCart();toast('상품을 삭제했습니다');return;}
+ const pq=e.target.closest('.pd-info .stepper button');
+ // pd qty via optarea stepper
+ const stepBtn=e.target.closest('[data-step]');
+ if(stepBtn){pdState.qty=Math.max(1,pdState.qty+ +stepBtn.dataset.step);const s=stepBtn.parentElement.querySelector('span');if(s)s.textContent=pdState.qty;pdRecalc();return;}
+ const buy=e.target.closest('[data-pdbuy]');
+ if(buy){currentProductAdd(buy.dataset.pdbuy);return;}
+ if(e.target.closest('[data-pdwish]')){toast('관심상품에 추가했습니다 <b>(데모)</b>');return;}
+ const pdtab=e.target.closest('[data-pdtab]');
+ if(pdtab){pdtab.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));pdtab.classList.add('on');document.getElementById('dpanel').innerHTML=pdPanel(pdtab.dataset.pdtab);return;}
+ const faq=e.target.closest('[data-faq]');
+ if(faq){faq.closest('.faq-item').classList.toggle('open');return;}
+ const mptab=e.target.closest('[data-mptab]');
+ if(mptab){mpTab=mptab.dataset.mptab;view.innerHTML=vMypage();return;}
+ const ct=e.target.closest('[data-ctab]');
+ if(ct&&!ct.dataset.go){view.innerHTML=vCustomer(ct.dataset.ctab);return;}
+ const chk=e.target.closest('[data-check]');
+ if(chk){const b=chk.querySelector('.box');if(b)b.classList.toggle('on'),b.textContent=b.classList.contains('on')?(chk.classList.contains('rad')?'':'✓'):'';return;}
+ const pay=e.target.closest('[data-pay]');
+ if(pay){pay.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));pay.classList.add('on');return;}
+ const jn=e.target.closest('[data-joinnext]');
+ if(jn){joinStep++;if(joinStep>3)joinStep=3;view.innerHTML=vJoin();if(joinStep===2)toast('약관에 동의했습니다');return;}
+ const jb=e.target.closest('[data-joinback]');
+ if(jb){joinStep=1;view.innerHTML=vJoin();return;}
+ const act=e.target.closest('[data-act]');
+ if(act){if(act.dataset.act==='toast')toast((act.dataset.msg||'완료')+' <b>(데모)</b>');
+   else if(act.dataset.act==='pay'){modal('결제 완료',`<div style="font-size:13.5px">주문이 정상적으로 완료되었습니다. <b>(데모)</b><br><span class="hint">마이페이지 › 주문내역에서 배송현황을 확인할 수 있습니다.</span></div>`,[{label:'주문내역 보기',cls:'sm dark',on:()=>{CART.length=0;updCart();go('mypage');}}]);}
+   return;}
+});
+document.getElementById('searchb').addEventListener('click',()=>{const v=document.getElementById('searchi').value.trim();toast((v?`'${v}' `:'')+'검색 결과 <b>(데모)</b>');});
+document.getElementById('searchi').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('searchb').click();});
+document.getElementById('gnbmob').addEventListener('click',()=>{modal('CATEGORY',`<div style="display:grid;gap:4px">${CATS.map(c=>`<button class="btn full" style="justify-content:space-between" data-go="cat-${c.key}"><span class="en">${c.key}</span><span class="hint">${c.ko}</span></button>`).join('')}<button class="btn full" data-go="customer"><span class="en">CUSTOMER</span></button></div>`,[{label:'닫기',cls:'sm'}]);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* theme */
+function applyTheme(t){if(t)document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('theme');if(b)b.textContent=(t==='dark')?'☀ THEME':'☾ THEME';try{localStorage.setItem('tp-theme',t);}catch(e){}}
+document.getElementById('theme').addEventListener('click',()=>{const cur=document.documentElement.getAttribute('data-theme');let n;if(cur==='dark')n='light';else if(cur==='light')n='dark';else n=matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark';applyTheme(n);});
+(function(){let t=null;try{t=localStorage.getItem('tp-theme');}catch(e){}if(t)applyTheme(t);})();
+
+/* boot */
+buildGnb();updCart();
+render((location.hash||'').replace('#','')||'home');
+window.addEventListener('hashchange',()=>{const r=(location.hash||'').replace('#','');if(r&&r!=='home')return;});
+</script>
+
+</body>
+</html>

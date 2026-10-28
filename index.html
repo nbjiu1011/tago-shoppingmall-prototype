@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>tagoplus Admin 기획</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="tagoplus 쇼핑몰 관리자 전체 메뉴를 담은 기획서 겸 클릭 가능한 HTML 프로토타입">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* tagoplus Admin 톤: 스카이블루 + 그린 플러스 + 라이트 사이드바 / 클릭 인터랙션(모달·토스트) 포함 */
+:root{
+  --bg:#ecf0f5; --surface:#ffffff; --surface-2:#f6f8fb; --surface-3:#eef2f7;
+  --border:#dde3ec; --border-strong:#c7d0dc;
+  --fg:#2a333f; --fg-2:#44515f; --muted:#79838f; --faint:#9aa4b0;
+  --pri:#3c8dbc; --pri-d:#357aa5; --pri-fg:#ffffff; --pri-weak:#e5f1f8; --pri-weak-fg:#2a6c92;
+  --leaf:#5aa85f; --brand:#e8542f;
+  --ok:#2f9e52; --ok-bg:#e3f5e8; --warn:#b47d12; --warn-bg:#f8efd7;
+  --danger:#d64a3f; --danger-bg:#fce5e2; --info:#3c8dbc; --info-bg:#e5f1f8;
+  --sb-bg:#ffffff; --sb-bg-2:#f6f8fb; --sb-fg:#4a545f; --sb-muted:#97a1ac;
+  --sb-head:#aab3bf; --sb-active-bg:#e7f2f9; --sb-active-fg:#2d7aa6; --sb-hover:#f1f6fa;
+  --shadow:0 1px 2px rgba(30,45,70,.05),0 2px 8px rgba(30,45,70,.05);
+  --radius:9px; --radius-s:7px;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1420; --surface:#161e2b; --surface-2:#1b2432; --surface-3:#212b3b;
+  --border:#2a3444; --border-strong:#3a4659;
+  --fg:#e6ecf4; --fg-2:#bcc7d5; --muted:#8c97a6; --faint:#657182;
+  --pri:#55a1d1; --pri-d:#6bb0dd; --pri-fg:#07131c; --pri-weak:#15293a; --pri-weak-fg:#a4d2ee;
+  --leaf:#6cbd72; --brand:#f3744f;
+  --ok:#43cf7f; --ok-bg:#15301f; --warn:#e0b159; --warn-bg:#33290f;
+  --danger:#f0756b; --danger-bg:#381a18; --info:#55a1d1; --info-bg:#122636;
+  --sb-bg:#0e1b28; --sb-bg-2:#0a1420; --sb-fg:#c0cbd7; --sb-muted:#7e8a98;
+  --sb-head:#69747f; --sb-active-bg:#12324a; --sb-active-fg:#cfe6f5; --sb-hover:#132333;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 2px 10px rgba(0,0,0,.3);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0d1420; --surface:#161e2b; --surface-2:#1b2432; --surface-3:#212b3b;
+  --border:#2a3444; --border-strong:#3a4659;
+  --fg:#e6ecf4; --fg-2:#bcc7d5; --muted:#8c97a6; --faint:#657182;
+  --pri:#55a1d1; --pri-d:#6bb0dd; --pri-fg:#07131c; --pri-weak:#15293a; --pri-weak-fg:#a4d2ee;
+  --leaf:#6cbd72; --brand:#f3744f;
+  --ok:#43cf7f; --ok-bg:#15301f; --warn:#e0b159; --warn-bg:#33290f;
+  --danger:#f0756b; --danger-bg:#381a18; --info:#55a1d1; --info-bg:#122636;
+  --sb-bg:#0e1b28; --sb-bg-2:#0a1420; --sb-fg:#c0cbd7; --sb-muted:#7e8a98;
+  --sb-head:#69747f; --sb-active-bg:#12324a; --sb-active-fg:#cfe6f5; --sb-hover:#132333;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 2px 10px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;text-wrap:balance;font-weight:700}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+.tnum{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+
+/* ---- shell ---- */
+.app{display:flex;flex-direction:column;min-height:100%}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;background:var(--surface);color:var(--fg);
+  height:56px;border-bottom:1px solid var(--border);box-shadow:var(--shadow);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:8px;font-weight:900;font-size:17px;letter-spacing:-.4px;white-space:nowrap}
+.brand .logo{display:inline-flex;align-items:center}
+.brand .logo svg{display:block}
+.brand .adm{color:var(--pri);font-weight:700;font-size:12px;font-family:var(--mono);align-self:center}
+.qicks{display:flex;gap:6px;margin-left:6px}
+.qick{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;border:0;color:#fff;opacity:.95}
+.qick:hover{opacity:1;transform:translateY(-1px)}
+.qick svg{width:16px;height:16px}
+.top-sp{flex:1}
+.top-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border-strong);
+  color:var(--fg-2);height:32px;padding:0 11px;border-radius:7px;font-size:12.5px}
+.top-btn:hover{border-color:var(--pri);color:var(--pri)}
+.top-user{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg);font-weight:500}
+.top-user .av{width:28px;height:28px;border-radius:50%;background:var(--pri);display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px}
+.bell{position:relative;color:var(--fg-2)}
+.bell .b{position:absolute;top:-5px;right:-6px;background:var(--brand);color:#fff;font-size:9px;border-radius:999px;padding:0 4px;font-weight:700}
+.hamb{display:none;background:transparent;border:0;color:var(--fg);padding:4px}
+.layout{flex:1;display:flex;min-height:0}
+
+/* ---- sidebar ---- */
+.sidebar{width:244px;flex:none;background:var(--sb-bg);color:var(--sb-fg);border-right:1px solid var(--border);overflow-y:auto;padding:8px 0 44px}
+.sidebar::-webkit-scrollbar{width:8px}.sidebar::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px}
+.nav-single,.nav-head{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;color:var(--sb-fg);padding:11px 16px;font-size:13.5px;font-weight:500}
+.nav-head{justify-content:space-between}
+.nav-head .hl{display:flex;align-items:center;gap:11px}
+.nav-single:hover,.nav-head:hover{background:var(--sb-hover)}
+.nav-single.active{background:var(--sb-active-bg);color:var(--sb-active-fg);font-weight:700;box-shadow:inset 3px 0 0 var(--pri)}
+.ico{width:18px;height:18px;flex:none;color:var(--sb-muted)}
+.nav-single.active .ico{color:var(--pri)}
+.caret{width:13px;height:13px;transition:transform .18s;color:var(--sb-muted)}
+.nav-group.open .caret{transform:rotate(90deg)}
+.submenu{display:none;background:var(--sb-bg-2);padding:4px 0 6px}
+.nav-group.open .submenu{display:block}
+.sub-item{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--sb-fg);padding:8px 16px 8px 46px;font-size:12.7px;position:relative}
+.sub-item:hover{background:var(--sb-hover);color:var(--fg)}
+.sub-item.active{color:var(--pri);font-weight:700}
+.sub-item.active::before{content:"";position:absolute;left:31px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--pri)}
+.sub-label{padding:9px 16px 5px 24px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-head);font-weight:700}
+.scrim{display:none}
+
+/* ---- main ---- */
+.main{flex:1;min-width:0;overflow-x:hidden;padding:22px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+.main-inner{max-width:1160px;margin:0 auto}
+.crumb{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;margin-bottom:9px;flex-wrap:wrap}
+.crumb b{color:var(--fg-2);font-weight:500}
+.page-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.page-h h1{font-size:22px;letter-spacing:-.3px}
+.page-h .en{color:var(--faint);font-size:12.5px;font-weight:500;font-family:var(--mono)}
+.page-path{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:18px}
+.page-path .pill-path{background:var(--surface-3);border:1px solid var(--border);padding:1px 7px;border-radius:5px}
+
+.spec{display:flex;gap:12px;background:var(--pri-weak);border:1px solid color-mix(in srgb,var(--pri) 25%,transparent);border-radius:var(--radius);padding:13px 15px;margin-bottom:20px}
+.spec .tag{flex:none;align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.05em;background:var(--pri);color:var(--pri-fg);padding:3px 8px;border-radius:5px;margin-top:1px}
+.spec .body{min-width:0}
+.spec .body p{margin:0 0 6px;color:var(--pri-weak-fg);font-size:13px;font-weight:500}
+.spec ul{margin:0;padding-left:17px;color:var(--fg-2);font-size:12.5px}
+.spec ul li{margin:2px 0}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border)}
+.card-h h3{font-size:14px;display:flex;align-items:center;gap:8px}
+.card-h h3 .dot{width:7px;height:7px;border-radius:2px;background:var(--pri)}
+.card-b{padding:16px}
+.card-b.flush{padding:0}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.toolbar .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;height:33px;padding:0 13px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface);color:var(--fg-2);font-size:12.5px;font-weight:500}
+.btn:hover{border-color:var(--pri);color:var(--pri)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:var(--pri-fg)}
+.btn.pri:hover{background:var(--pri-d);border-color:var(--pri-d);color:var(--pri-fg)}
+.btn.ghost{background:var(--surface-2)}
+.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.btn.danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn.sm{height:27px;padding:0 9px;font-size:11.5px}
+
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+.inp{height:32px;min-width:120px;border:1px solid var(--border-strong);background:var(--surface);color:var(--fg);border-radius:6px;padding:0 9px;font-size:12.5px;font-family:inherit}
+.inp.wide{min-width:220px}
+.inp[disabled]{color:var(--faint)}
+.seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{height:32px;padding:0 11px;border:0;background:var(--surface);color:var(--fg-2);font-size:12px;border-left:1px solid var(--border)}
+.seg button:first-child{border-left:0}
+.seg button.on{background:var(--pri);color:var(--pri-fg)}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl-wrap{overflow-x:auto}
+thead th{background:var(--surface-2);text-align:left;padding:10px 12px;color:var(--fg-2);font-weight:700;font-size:11.5px;white-space:nowrap;border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--fg-2);vertical-align:middle;white-space:nowrap}
+table.dt tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--surface-2)}
+td.num,th.num{text-align:center;color:var(--muted)}
+.thumb{width:34px;height:34px;border-radius:6px;background:var(--surface-3);border:1px solid var(--border);display:grid;place-items:center;color:var(--faint);font-size:9px}
+.lnk{color:var(--pri);font-weight:500}
+.sub{color:var(--muted);font-size:11px}
+.row-act{display:flex;gap:5px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)}.p-warn{background:var(--warn-bg);color:var(--warn)}
+.p-danger{background:var(--danger-bg);color:var(--danger)}.p-info{background:var(--info-bg);color:var(--info)}.p-muted{background:var(--surface-3);color:var(--muted)}
+.dotp{width:6px;height:6px;border-radius:50%;background:currentColor}
+.pager{display:flex;justify-content:center;gap:4px;padding:14px}
+.pager button{min-width:30px;height:30px;border:1px solid var(--border);background:var(--surface);color:var(--fg-2);border-radius:6px;font-size:12px}
+.pager button.on{background:var(--pri);color:var(--pri-fg);border-color:var(--pri)}
+
+.form-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.form-tbl th{width:170px;text-align:left;vertical-align:top;padding:12px 14px;background:var(--surface-2);color:var(--fg-2);font-weight:700;font-size:12.5px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+.form-tbl th .req{color:var(--danger);margin-left:3px}
+.form-tbl td{padding:11px 14px;border-bottom:1px solid var(--border)}
+.ta{width:100%;min-height:72px;border:1px solid var(--border-strong);background:var(--surface);color:var(--fg);border-radius:6px;padding:9px;font-size:12.5px;font-family:inherit;resize:vertical}
+.hint{color:var(--muted);font-size:11px;margin-top:4px}
+.toggle{display:inline-flex;align-items:center;gap:7px;color:var(--fg-2);font-size:12px}
+.switch{width:38px;height:21px;border-radius:999px;background:var(--border-strong);position:relative;flex:none;cursor:pointer;border:0}
+.switch.on{background:var(--pri)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.15s}
+.switch.on::after{left:19px}
+.radios{display:flex;gap:16px;flex-wrap:wrap;color:var(--fg-2);font-size:12.5px}
+.radios label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.dotradio{width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong)}
+.dotradio.on{border-color:var(--pri);box-shadow:inset 0 0 0 3px var(--pri)}
+.form-foot{display:flex;justify-content:center;gap:9px;padding:18px;border-top:1px solid var(--border);background:var(--surface-2)}
+
+.grid{display:grid;gap:16px}
+.stat-row{grid-template-columns:repeat(4,1fr)}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px}
+.stat .k{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;font-weight:500}
+.stat .k .ic{width:15px;height:15px;color:var(--pri)}
+.stat .v{font-size:25px;font-weight:900;margin-top:7px;letter-spacing:-.5px}
+.stat .d{font-size:11.5px;margin-top:3px;color:var(--muted)}
+.stat .d b.up{color:var(--ok)} .stat .d b.dn{color:var(--danger)}
+.two-col{grid-template-columns:1fr 1fr}
+.notice-strip{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;margin-bottom:16px;font-size:12.5px;color:var(--fg-2)}
+.notice-strip .tagn{background:var(--brand);color:#fff;font-weight:700;font-size:10.5px;padding:3px 8px;border-radius:5px;flex:none}
+.chart-wrap{padding:6px 4px 0}
+.chart-cap{text-align:center;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--fg-2)}
+.legend{display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.sample-note{font-size:11px;color:var(--faint);margin-top:2px}
+.sample-badge{font-size:10px;color:var(--faint);border:1px dashed var(--border-strong);padding:1px 6px;border-radius:5px}
+
+.ov-hero{background:linear-gradient(120deg,#20334d,#2f6a93);color:#fff;border-radius:14px;padding:26px 24px;margin-bottom:20px}
+.ov-hero h1{font-size:25px;letter-spacing:-.5px}
+.ov-hero p{margin:9px 0 0;color:#d2dcec;font-size:13.5px;max-width:60ch}
+.ov-hero .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.ov-hero .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-size:12px}
+.ov-hero .chip b{color:#ffd9a6}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:20px}
+.ov-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px}
+.ov-card h4{display:flex;align-items:center;gap:9px;font-size:13.5px;margin-bottom:9px}
+.ov-card h4 .ico{color:var(--pri)}
+.ov-card .cnt{margin-left:auto;font-size:11px;color:var(--muted);font-weight:500}
+.ov-card ul{margin:0;padding:0;list-style:none}
+.ov-card li{padding:4px 0;font-size:12.5px;border-top:1px dashed var(--border)}
+.ov-card li:first-child{border-top:0}
+.ov-card li button{background:0;border:0;padding:0;color:var(--fg-2);font-size:12.5px;text-align:left;width:100%;cursor:pointer}
+.ov-card li button:hover{color:var(--pri)}
+.ov-card li .sl{color:var(--faint);font-family:var(--mono);font-size:10.5px;float:right}
+.legend-box{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ext-card{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.ext-card .big{width:46px;height:46px;border-radius:12px;background:var(--pri-weak);color:var(--pri);display:grid;place-items:center;flex:none}
+
+/* ---- toast ---- */
+#toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;padding:0 12px}
+.toast{background:#20262e;color:#fff;padding:10px 16px;border-radius:9px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:1;transform:translateY(0);transition:.28s;max-width:90vw}
+.toast.out{opacity:0;transform:translateY(8px)}
+.toast b{color:#8fd0f0}
+
+/* ---- modal ---- */
+.ov-modal{position:fixed;inset:0;z-index:70;background:rgba(15,25,40,.5);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:560px;animation:pop .18s ease}
+@keyframes pop{from{opacity:0;transform:translateY(-8px) scale(.99)}to{opacity:1;transform:none}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px;border-bottom:1px solid var(--border)}
+.modal-h h3{font-size:15px}
+.modal-h .x{background:0;border:0;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px;border-radius:6px}
+.modal-h .x:hover{background:var(--surface-3);color:var(--fg)}
+.modal-b{padding:4px 0;max-height:62vh;overflow-y:auto}
+.modal-b .form-tbl th{width:150px}
+.modal-msg{padding:20px 18px;font-size:13.5px;color:var(--fg-2)}
+.modal-f{display:flex;justify-content:flex-end;gap:8px;padding:14px 18px;border-top:1px solid var(--border);background:var(--surface-2);border-radius:0 0 12px 12px}
+
+@media (max-width:1100px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:960px){
+  .hamb{display:block}
+  .sidebar{position:fixed;top:56px;bottom:0;left:0;z-index:50;transform:translateX(-100%);transition:transform .22s;padding-left:env(safe-area-inset-left,0px)}
+  .sidebar.open{transform:none}
+  .scrim.show{display:block;position:fixed;inset:56px 0 0;background:rgba(5,10,20,.5);z-index:45}
+  .two-col{grid-template-columns:1fr}
+}
+@media (max-width:760px){.qicks{display:none}}
+@media (max-width:560px){.stat-row{grid-template-columns:1fr}.brand .adm{display:none}.page-h h1{font-size:19px}.form-tbl th{width:116px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="hamb" id="hamb" aria-label="메뉴"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <div class="brand"><span class="logo"><svg width="27" height="27" viewBox="0 0 28 28" aria-label="tagoplus"><rect width="28" height="28" rx="7.5" fill="#3c8dbc"/><path d="M15 6.2h-4.3A1.6 1.6 0 009.1 7.8v4.3a1.6 1.6 0 00.47 1.13l5.6 5.6a1.6 1.6 0 002.26 0l4.1-4.1a1.6 1.6 0 000-2.26l-5.6-5.6A1.6 1.6 0 0015 6.2z" fill="#fff"/><circle cx="11.6" cy="9.9" r="1.15" fill="#3c8dbc"/><circle cx="21.2" cy="6.8" r="4.5" fill="#5aa85f" stroke="#fff" stroke-width="1.5"/><path d="M21.2 4.8v4M19.2 6.8h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></span>tagoplus <span class="adm">Administrator</span></div>
+    <div class="qicks" id="qicks"></div>
+    <div class="top-sp"></div>
+    <span class="bell top-btn" title="알림"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg><span class="b">0</span></span>
+    <button class="top-btn" id="theme"><span id="theme-tx">다크</span></button>
+    <button class="top-btn" title="홈페이지(새 창)">🏠 홈페이지</button>
+    <div class="top-user"><span class="av">최</span><span>최고관리자</span></div>
+  </header>
+  <div class="layout">
+    <nav class="sidebar" id="sidebar"></nav>
+    <div class="scrim" id="scrim"></div>
+    <main class="main"><div class="main-inner" id="view"></div></main>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<script>
+/* ============ icons ============ */
+const ICON={
+ overview:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
+ home:'M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10',
+ order:'M3 6h2l2 12h11l2-9H7M10 21a1 1 0 100-2 1 1 0 000 2zM17 21a1 1 0 100-2 1 1 0 000 2z',
+ goods:'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
+ member:'M16 21v-2a4 4 0 00-8 0v2M12 11a4 4 0 100-8 4 4 0 000 8',
+ promo:'M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S9.5 3 7 4.5 9 7 12 7zM12 7s2.5-4 5-2.5S15 7 12 7z',
+ design:'M2 4h20v12H2zM8 20h8M12 16v4',
+ board:'M8 4h8l1 2h2v15H5V6h2zM9 3h6v3H9zM8 11h8M8 15h5',
+ sales:'M3 3v18h18M7 14l4-4 3 3 5-6',
+ counter:'M3 12h4l3 8 4-16 3 8h4',
+ settings:'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 13a7.9 7.9 0 00.1-2l2-1.5-2-3.4-2.3 1a7.6 7.6 0 00-1.7-1L14.9 3h-3.8l-.6 2.6a7.6 7.6 0 00-1.7 1l-2.3-1-2 3.4L4.5 11a7.9 7.9 0 000 2l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 001.7 1l.6 2.6h3.8l.6-2.6a7.6 7.6 0 001.7-1l2.3 1 2-3.4-2-1.5z',
+ pay:'M2 7h20v10H2zM2 11h20M6 15h4'
+};
+function svg(name,cls){return `<svg class="${cls||'ico'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${ICON[name]||ICON.settings}"/></svg>`;}
+
+/* ============ navigation IA ============ */
+const NAV=[
+ {id:'overview',label:'기획 개요',icon:'overview',single:true},
+ {id:'home',label:'대시보드 (HOME)',icon:'home',single:true},
+ {group:'주문배송',icon:'order',items:[['order-list','전체 주문내역'],['order-kcp','KCP 상점관리자']]},
+ {group:'상품관리',icon:'goods',items:[['goods-list','전체상품목록'],['goods-write','상품등록'],['goods-category','상품분류 생성·관리'],['goods-display','상품진열관리'],['goods-main','메인 노출상품관리']]},
+ {group:'고객 및 문의관리',icon:'member',items:[['member-list','전체회원 목록'],['member-dropout','탈퇴회원 목록'],['member-review','상품후기 내역'],['member-qna','상품문의 내역'],['member-sns','SNS 로그인연동']]},
+ {group:'프로모션',icon:'promo',items:[['promo-list','적립금 지급·사용내역'],['promo-set','적립금 자동지급 설정']]},
+ {group:'팝업 및 디자인관리',icon:'design',items:[['design-popup','팝업관리'],['sub:메인 디자인관리'],['design-visual','비주얼 관리'],['design-banner','배너관리']]},
+ {group:'게시판',icon:'board',items:[['board','공지/Q&A/FAQ/이벤트']]},
+ {group:'매출분석',icon:'sales',items:[['sales-period','기간별 매출통계'],['sales-goods','상품별 매출통계'],['sales-category','상품분류별 매출통계'],['sales-device','디바이스별 매출통계']]},
+ {group:'접속통계',icon:'counter',items:[['counter-status','접속통계 현황'],['counter-visit-detail','개별방문기록'],['counter-device','디바이스별 접속현황'],['counter-site','사이트별 유입현황'],['counter-keyword','검색 키워드분석'],['counter-browser','웹 브라우저'],['counter-os','운영체제']]},
+ {group:'환경설정',icon:'settings',items:[['set-basic','기본 환경설정'],['set-admin','관리자 정보수정'],['set-policy','이용약관/개인정보처리'],['set-return','상품공통 교환 및 반품'],['sub:서비스연동'],['set-pg','전자결제(PG)'],['set-settlement','무통장/계좌설정'],['set-sms','문자(SMS)'],['set-sms-user','고객용 자동발송'],['set-sms-adm','관리자용 자동발송'],['set-delivery','배송·택배'],['set-naverpay','네이버쇼핑 및 페이'],['set-delivery-fare','지역별 추가배송비 설정'],['set-ipaccess','IP접속제한 설정']]}
+];
+const QUICK=[['order-list','order','#4a9d4f'],['goods-list','goods','#3c8dbc'],['member-list','member','#ef8a2b'],['set-basic','settings','#7b8794']];
+
+/* ============ screen definitions ============ */
+const F_PERIOD={label:'기간별 조회',type:'period'};
+const F_SEARCH={label:'검색어',type:'search'};
+const S={
+ 'home':{kind:'dashboard',menu:'HOME',title:'대시보드',en:'Home',path:'/sw-adm/home/'},
+ 'order-list':{kind:'list',menu:'주문배송',title:'전체 주문내역',en:'Order List',path:'/sw-adm/order/',
+   note:{p:'쇼핑몰의 모든 주문을 단일 목록에서 조회·상태관리하는 핵심 운영 화면.',li:['상태/결제수단/기간/키워드 복합 검색','주문상태 단계별 처리(결제완료→배송준비→상품발송→수령→구매완료)','취소요청 접수 및 취소완료 처리','선택 주문 엑셀 다운로드·일괄삭제']},
+   filters:[{label:'상태/결제수단별',type:'sel',opt:['전체보기','결제수단 전체']},F_PERIOD,F_SEARCH],
+   cols:['주문일시','주문번호','주문자','받는이','주문상품(옵션)','구매수량','상품금액','총결제금액','결제수단','주문상태','메모'],
+   actions:[['선택 엑셀다운로드'],['선택 일괄삭제','ghost']],total:13},
+ 'order-kcp':{kind:'external',menu:'주문배송',title:'KCP 상점관리자',en:'KCP Partner',path:'https://partner.kcp.co.kr',
+   note:{p:'전자결제(PG) 상세 승인·취소·정산 내역은 KCP 상점관리자(외부 사이트)에서 처리.',li:['관리자 메뉴에서 새 창으로 KCP 파트너 포털 연결','결제 승인/취소/부분취소, 정산 스케줄 확인','PG 연동정보는 환경설정 › 전자결제(PG)에서 관리']}},
+ 'goods-list':{kind:'list',menu:'상품관리',title:'전체상품목록',en:'Goods List',path:'/sw-adm/goods/',
+   note:{p:'등록된 모든 상품을 조회·수정·진열/품절 관리.',li:['상품분류별·수정기간별·키워드 검색','재고/조회수/판매가·정상가 한눈에','진열여부·진열순위 즉시 조정','선택 일괄삭제']},
+   filters:[{label:'상품분류별',type:'sel',opt:['전체 분류']},{label:'수정기간별',type:'period'},F_SEARCH],
+   cols:['번호','상품코드','이미지','상품분류/상품정보','재고/조회수','판매가/정상가','진열여부/진열순위','설정'],actions:[['선택 일괄삭제','ghost']],total:48},
+ 'goods-write':{kind:'form',menu:'상품관리',title:'상품등록',en:'Goods Register',path:'/sw-adm/goods/write.php',
+   note:{p:'신규 상품 등록 / 기존 상품 수정 폼. 분류·기본정보·가격/재고·옵션·이미지·상세까지 한 화면에서 입력.',li:['9개 섹션 단일 폼 구조','옵션 조합별 추가금액·필수여부 설정','원본/상세/리스트/추가 이미지 개별 등록','적립금·구매수량 제한 등 판매정책 포함']},
+   sections:[
+     {t:'상품분류정보',f:[['선택한 상품분류','tags'],['상품분류 선택','sel']]},
+     {t:'상품기본정보',f:[['상품코드','text','자동생성 / 직접입력'],['상품진열여부','radio','진열함·진열안함'],['상품명','text','',1],['아이콘','chips','신상품·추천·HOT·품절'],['원산지','text'],['제조사','text'],['검색태그','text','쉼표로 구분']]},
+     {t:'상품가격 / 재고 / 적립금 설정',f:[['정상가 및 할인률','price'],['판매가(할인)','price','',1],['재고설정','radio','재고사용·사용안함'],['재고량','num'],['구매수량 설정','range','최소~최대'],['적립금 설정','price','구매액 대비 %/정액']]},
+     {t:'상품옵션 설정',f:[['옵션사용여부','toggle'],['옵션입력','sel','조합형·단일(독립)형'],['옵션명','text','예) 색상 / 사이즈'],['옵션값 및 추가금액 설정','table'],['필수여부','radio','필수·선택']]},
+     {t:'상품이미지 설정',f:[['이미지등록 방식','radio','파일업로드·URL'],['확대(원본)이미지','file'],['상세이미지','file'],['리스트이미지','file']]},
+     {t:'추가이미지 설정',f:[['추가이미지','file','다중 업로드']]},
+     {t:'추가항목 설정',f:[['추가항목','text'],['내용','text']]},
+     {t:'상품상세정보 설정',f:[['상세내용','editor'],['간략설명','ta']]}
+   ],foot:['저장','목록']},
+ 'goods-category':{kind:'list',menu:'상품관리',title:'상품분류 생성·관리',en:'Category',path:'/sw-adm/goods/category.php',
+   note:{p:'다단계(1~3차) 상품 카테고리 트리를 생성·정렬·노출관리.',li:['1차/하위 카테고리 추가','분류표시여부 토글','노출순위 드래그/번호 지정']},
+   filters:[],cols:['상품분류명','분류표시여부','노출순위','설정'],actions:[['1차 카테고리 추가','pri']],total:9,treeHint:true},
+ 'goods-display':{kind:'list',menu:'상품관리',title:'상품진열관리',en:'Goods Setting',path:'/sw-adm/goods/quick.setting.php',
+   note:{p:'분류·기간 필터로 상품의 진열여부/진열순위를 빠르게 일괄 수정.',li:['검색 후 체크박스 선택','진열여부·진열순위 선택 일괄수정']},
+   filters:[{label:'상품분류별',type:'sel',opt:['전체 분류']},{label:'수정기간별',type:'period'},F_SEARCH],
+   cols:['번호','상품코드','이미지','상품정보','진열여부','진열순위'],actions:[['선택 일괄수정','pri']],total:48},
+ 'goods-main':{kind:'list',menu:'상품관리',title:'메인 노출상품 관리',en:'Main Goods',path:'/sw-adm/goods/goods.main.php',
+   note:{p:'메인페이지에 노출할 상품을 Best / New 영역으로 지정.',li:['상품추가로 노출 상품 선택','Best 상품 / New 상품 플래그','선택 일괄설정']},
+   filters:[],cols:['번호','상품코드','이미지','상품정보','재고','판매가','진열여부','Best 상품','New 상품'],actions:[['상품추가','pri'],['선택 일괄설정','ghost']],total:12},
+ 'member-list':{kind:'list',menu:'고객 및 문의관리',title:'회원목록',en:'Members',path:'/sw-adm/members/',
+   note:{p:'전체 회원 조회·등급/적립금·마케팅 수신동의 관리.',li:['가입기간·키워드 검색','연락처/주소/적립금 확인','수신동의(SMS·메일) 상태','개별 정보수정']},
+   filters:[{label:'회원가입기간',type:'period'},F_SEARCH],cols:['번호','가입일','아이디','성명','주소/휴대폰/일반전화','적립금','수신동의','설정'],total:1240},
+ 'member-dropout':{kind:'list',menu:'고객 및 문의관리',title:'탈퇴회원 목록',en:'Dropout',path:'/sw-adm/members/dropout.php',
+   note:{p:'탈퇴 처리된 회원 이력 조회(법정 보관기간 관리).',li:['탈퇴일·사유 확인','개인정보 파기 정책 연계']},
+   filters:[{label:'탈퇴기간',type:'period'},F_SEARCH],cols:['번호','탈퇴일','아이디','성명','탈퇴사유','설정'],total:37},
+ 'member-review':{kind:'list',menu:'고객 및 문의관리',title:'상품후기',en:'Goods Review',path:'/sw-adm/members/review.php',
+   note:{p:'고객이 작성한 상품후기 조회·관리.',li:['만족도(별점) 확인','부적절 후기 삭제','기간·키워드 검색']},
+   filters:[{label:'기간별',type:'period'},F_SEARCH],cols:['번호','작성자','만족도','상품정보/제목','등록일','설정'],actions:[['선택 일괄삭제','ghost']],total:86},
+ 'member-qna':{kind:'list',menu:'고객 및 문의관리',title:'상품문의',en:'Goods Q&A',path:'/sw-adm/members/gd-qna.php',
+   note:{p:'상품 관련 1:1 문의 접수 및 답변 관리.',li:['문의유형별 분류','답변여부 상태 추적','미답변 우선 처리']},
+   filters:[{label:'기간별',type:'period'},F_SEARCH],cols:['번호','작성자','문의유형','상품정보/문의제목','등록일','답변여부','설정'],actions:[['선택 일괄삭제','ghost']],total:54},
+ 'member-sns':{kind:'form',menu:'고객 및 문의관리',title:'SNS 로그인연동 관리',en:'Social Login',path:'/sw-adm/members/sns.login.php',
+   note:{p:'소셜 간편로그인(네이버·카카오·구글) 연동 설정.',li:['채널별 사용여부','Client ID / Secret 입력','콜백(Redirect) URL 안내']},
+   sections:[{t:'네이버 로그인',f:[['사용여부','toggle'],['Client ID','text'],['Client Secret','text'],['Callback URL','text','발급 시 등록']]},{t:'카카오 로그인',f:[['사용여부','toggle'],['REST API 키','text'],['Callback URL','text']]},{t:'구글 로그인',f:[['사용여부','toggle'],['Client ID','text'],['Client Secret','text'],['Callback URL','text']]}],foot:['수정']},
+ 'promo-list':{kind:'list',menu:'프로모션',title:'적립금 지급 및 사용내역',en:'E-money List',path:'/sw-adm/promotion/',
+   note:{p:'회원 적립금의 지급·사용·차감 전 내역을 조회하고, 관리자 직권 지급/차감.',li:['유형별(지급·사용·차감·소멸) 필터','회원별 적립금 잔고 확인','직권 지급 / 직권 차감 실행','선택 일괄삭제']},
+   filters:[{label:'유형별 보기',type:'sel',opt:['전체','지급','사용','차감']},{label:'기간별',type:'period'},F_SEARCH],
+   cols:['변동일','유형','변동액','아이디','성명','지급/차감 내역','적립금잔고','설정'],actions:[['적립금 직권 지급','pri'],['적립금 직권 차감','ghost'],['선택 일괄삭제','ghost']],total:312},
+ 'promo-set':{kind:'form',menu:'프로모션',title:'적립금 자동지급 설정',en:'E-money Policy',path:'/sw-adm/promotion/emoney.set.php',
+   note:{p:'적립금 기본정책과 조건별 자동지급 규칙 설정.',li:['지급여부·구매시 일괄적용','사용가능/최소/최대 사용 적립금','조건별(가입·구매·후기 등) 지급방식·금액']},
+   sections:[{t:'적립금 기본정책 설정',f:[['적립금 지급여부','toggle'],['구매시 일괄적용','toggle'],['사용가능 적립금','price','보유 적립금 중 사용 기준'],['최소 사용적립금','price'],['최대 사용적립금','price']]},{t:'적립금 지급 및 금액 설정',f:[['조건','tags','회원가입·구매확정·후기작성'],['지급방식','radio','정률(%)·정액(원)'],['지급 적립금','price']]}],foot:['확인']},
+ 'design-popup':{kind:'list',menu:'팝업 및 디자인관리',title:'팝업목록',en:'Popup List',path:'/sw-adm/design/popup.php',
+   note:{p:'쇼핑몰 레이어/윈도우 팝업 등록·노출기간 관리.',li:['위치구분·팝업타입(레이어/윈도우)','노출기간(시작~종료) 예약','등록/수정/삭제']},
+   filters:[{label:'노출기간 조회',type:'period'},{label:'검색어 및 타입',type:'search'}],cols:['번호','위치구분','팝업제목','노출기간(시작일~종료일)','팝업타입','등록일','설정'],actions:[['팝업등록','pri']],total:5},
+ 'design-visual':{kind:'list',menu:'팝업 및 디자인관리',title:'메인비주얼 이미지관리',en:'Visual',path:'/sw-adm/design/visual.php',
+   note:{p:'메인 상단 비주얼 슬라이드 배너 관리(PC/모바일 분리).',li:['PC·Mobile 이미지 각각 등록','순위(슬라이드 순서)·노출여부','링크 URL 설정']},
+   filters:[],cols:['순위','이미지(PC)','이미지(Mobile)','정보','노출여부','설정'],actions:[['메인비주얼 이미지추가','pri']],total:4},
+ 'design-banner':{kind:'list',menu:'팝업 및 디자인관리',title:'메인배너 관리',en:'Banner',path:'/sw-adm/design/banner.php',
+   note:{p:'메인 중간/하단 배너 영역 관리(PC/모바일 분리).',li:['PC·Mobile 이미지 등록','순위·노출여부','링크 연결']},
+   filters:[],cols:['순위','이미지(PC)','이미지(Mobile)','정보','노출여부','설정'],actions:[['메인배너 추가','pri']],total:6},
+ 'board':{kind:'board',menu:'게시판',title:'게시판 관리',en:'Board',path:'/sw-adm/board/board.list.php',
+   note:{p:'공지사항·Q&A·FAQ·이벤트/기획전을 동일 엔진(code 구분)으로 운영.',li:['게시판 종류별 글 목록/작성/삭제','작성기간·키워드 검색','조회수 집계']},
+   tabs:['공지사항','질문과 답변(Q&A)','자주하는 질문(FAQ)','이벤트/기획전'],filters:[{label:'작성기간별 조회',type:'period'},F_SEARCH],cols:['번호','제목','등록일','조회'],actions:[['글쓰기','pri'],['일괄삭제','ghost']],total:23},
+ 'sales-period':{kind:'stats',menu:'매출분석',title:'기간별 매출통계',en:'Sales by Period',path:'/sw-adm/sales/index.php',
+   note:{p:'년/월/일/시간/요일 단위 매출 추이 분석.',li:['기간 단위 전환 토글','매출 그래프 + 상세 표','전기 대비 비교']},segs:['년간','월간','일간','시간','요일'],chart:'bar'},
+ 'sales-goods':{kind:'stats',menu:'매출분석',title:'판매상품별 매출통계',en:'Sales by Goods',path:'/sw-adm/sales/goods.php',
+   note:{p:'상품별 판매수량·결제금액 랭킹.',li:['분류·기간 필터','상품별 판매단가·옵션가·수량·금액']},
+   filters:[{label:'상품분류별',type:'sel',opt:['전체 분류']},{label:'판매기간별',type:'period'},F_SEARCH],cols:['번호','상품정보','판매단가','총옵션가격','총판매수량','총결제금액'],total:48},
+ 'sales-category':{kind:'stats',menu:'매출분석',title:'상품분류별 매출통계',en:'Sales by Category',path:'/sw-adm/sales/category.php',
+   note:{p:'카테고리별 매출 비중 분석.',li:['년/월/일간 단위','분류별 매출 막대·구성비']},segs:['년간','월간','일간'],chart:'bar'},
+ 'sales-device':{kind:'stats',menu:'매출분석',title:'디바이스별 매출통계',en:'Sales by Device',path:'/sw-adm/sales/device.php',
+   note:{p:'PC·모바일 디바이스별 매출 비교.',li:['년/월/일간 단위','PC vs Mobile 매출·비중']},segs:['년간','월간','일간'],chart:'device'},
+ 'counter-status':{kind:'stats',menu:'접속통계',title:'접속통계현황',en:'Visit Status',path:'/sw-adm/counter/index.php',
+   note:{p:'일별/누적 방문자·페이지뷰 현황 대시보드.',li:['오늘·어제·누적 방문수','추이 그래프','통계 초기화']},chart:'bar',segs:[],resetBtn:true},
+ 'counter-visit-detail':{kind:'list',menu:'접속통계',title:'개별방문 기록',en:'Visit Detail',path:'/sw-adm/counter/visit.detail.php',
+   note:{p:'방문자 단위 접속 로그 상세 조회.',li:['IP·유입경로·검색키워드','브라우저·운영체제','기간·키워드 검색, 일괄삭제']},
+   filters:[{label:'유입경로',type:'sel',opt:['전체']},{label:'기간별',type:'period'},F_SEARCH],cols:['번호','방문일시','IP','키워드','브라우저','운영체제','유입경로'],actions:[['선택 일괄삭제','ghost']],total:5720},
+ 'counter-device':{kind:'stats',menu:'접속통계',title:'디바이스별 접속현황',en:'Visit by Device',path:'/sw-adm/counter/visit.php',
+   note:{p:'PC·모바일 접속 비중 추이.',li:['년/월/일/시간/요일 단위','디바이스 구성비']},segs:['년간','월간','일간','시간','요일'],chart:'device'},
+ 'counter-site':{kind:'stats',menu:'접속통계',title:'웹사이트 유입현황',en:'Referrer',path:'/sw-adm/counter/visit.site.php',
+   note:{p:'외부 유입 사이트(리퍼러) 순위.',li:['유입 도메인별 방문수','검색/SNS/직접 유입 구분']},chart:'rank',rankLabel:'유입 사이트'},
+ 'counter-keyword':{kind:'stats',menu:'접속통계',title:'검색 키워드분석',en:'Keywords',path:'/sw-adm/counter/visit.keyword.php',
+   note:{p:'유입 검색 키워드 순위.',li:['키워드별 유입수','마케팅 키워드 발굴']},chart:'rank',rankLabel:'검색 키워드'},
+ 'counter-browser':{kind:'stats',menu:'접속통계',title:'웹 브라우저 현황',en:'Browser',path:'/sw-adm/counter/visit.browser.php',
+   note:{p:'방문자 브라우저 점유율.',li:['Chrome·Safari·Edge 등 비중','UI 호환성 참고']},chart:'rank',rankLabel:'브라우저'},
+ 'counter-os':{kind:'stats',menu:'접속통계',title:'운영체제 현황',en:'OS',path:'/sw-adm/counter/visit.os.php',
+   note:{p:'방문자 운영체제 점유율.',li:['Windows·Android·iOS·macOS','디바이스 환경 파악']},chart:'rank',rankLabel:'운영체제'},
+ 'set-basic':{kind:'form',menu:'환경설정',title:'기본 환경설정',en:'Mall Information',path:'/sw-adm/basic/',
+   note:{p:'쇼핑몰 운영의 기준이 되는 기본·회사·정책·SEO·메일 설정.',li:['쇼핑몰/회사 기본정보(사업자·통신판매번호 등)','배송비·무료배송조건 등 운영정책','SNS 채널·SEO 메타·네이버 SMTP','가입불가 ID 등 기타']},
+   sections:[
+     {t:'기본정보 설정',f:[['쇼핑몰명','text','',1],['쇼핑몰URL','text'],['대표메일(주문확인)','text'],['개인정보관리자','text']]},
+     {t:'회사정보 설정',f:[['상호명','text'],['대표자명','text'],['사업자번호','text'],['통신판매신고번호','text'],['대표전화','text'],['FAX 번호','text'],['사업장주소','text','우편번호+주소']]},
+     {t:'쇼핑몰 운영정책 설정',f:[['기본배송비','price'],['무료배송조건','price','N원 이상'],['장바구니 보관기간','sel','7일/15일/30일'],['마우스 우클릭','radio','허용·방지']]},
+     {t:'소셜 네트워크 서비스(SNS) 설정',f:[['카카오스토리','text'],['페이스북','text'],['인스타그램','text'],['유튜브','text'],['네이버블로그','text']]},
+     {t:'쇼핑몰정보(SEO) 설정',f:[['쇼핑몰 타이틀','text'],['검색키워드','text','meta keywords'],['쇼핑몰 간략설명','ta'],['네이버(site-verification)','text'],['CUSTOMER CENTER','text','고객센터 안내문구']]},
+     {t:'네이버 SMTP 설정',f:[['네이버 SMTP 사용여부','toggle'],['네이버 아이디','text'],['네이버 비밀번호','text']]},
+     {t:'기타 설정',f:[['가입불가ID','ta','금지 아이디 목록']]}
+   ],foot:['저장']},
+ 'set-admin':{kind:'list',menu:'환경설정',title:'관리자 목록',en:'Administrator',path:'/sw-adm/basic/admin.list.php',
+   note:{p:'관리자 계정 및 권한그룹 관리.',li:['관리자 추가/삭제','그룹별 접근권한','연락처·생성일 이력']},
+   filters:[],cols:['번호','그룹명','관리자 ID','관리자명','연락처','생성일','관리'],actions:[['관리자추가','pri']],total:3},
+ 'set-policy':{kind:'editor',menu:'환경설정',title:'이용약관 / 개인정보처리방침',en:'Agreement & Privacy',path:'/sw-adm/basic/policy.php',
+   note:{p:'회원가입·주문 시 노출되는 약관/방침 편집.',li:['이용약관 본문','개인정보처리방침 본문','개정일자 관리']},editors:['이용약관','개인정보처리방침'],foot:['Submit']},
+ 'set-return':{kind:'editor',menu:'환경설정',title:'교환 및 반품안내',en:'Shopping Guide',path:'/sw-adm/basic/shipping.guide.php',
+   note:{p:'전 상품 공통 교환·반품 안내문 편집(상품 상세에 공통 노출).',li:['교환/반품 절차 안내','비용 부담 기준']},editors:['교환 및 반품안내'],foot:['Submit']},
+ 'set-pg':{kind:'form',menu:'환경설정',sub:'서비스연동',title:'전자결제(PG)',en:'PG',path:'/sw-adm/basic/pg.php',
+   note:{p:'PG사(KCP 등) 연동 정보 및 사용 결제수단 설정.',li:['사이트코드/사이트키/절대경로','최대 할부개월','사용 결제수단(카드·계좌이체·가상계좌 등)']},
+   sections:[{t:'전자결제(PG) 설정',f:[['사용 PG사','sel','KCP / 이니시스 …'],['사이트코드 (SITE CODE)','text'],['사이트키 (SITE KEY)','text'],['절대경로 (PATH)','text'],['사이트명','text'],['최대할부개월','sel','일시불~12개월'],['사용 결제수단','chips','신용카드·계좌이체·가상계좌·휴대폰']]}],foot:['설정']},
+ 'set-settlement':{kind:'list',menu:'환경설정',sub:'서비스연동',title:'무통장/계좌설정',en:'Bank Account',path:'/sw-adm/basic/settlement.php',
+   note:{p:'무통장입금 받을 은행 계좌 관리.',li:['계좌 추가/삭제','사용여부 토글','예금주·계좌번호']},
+   filters:[],cols:['번호','사용여부','은행명','계좌번호','예금주명','관리'],actions:[['은행 계좌추가','pri']],total:3},
+ 'set-sms':{kind:'form',menu:'환경설정',sub:'서비스연동',title:'문자(SMS) 설정',en:'SMS',path:'/sw-adm/basic/sms.php',
+   note:{p:'SMS 발송사(원샷 등) 연동 및 발신번호 설정. 잔여 건수·발송내역 확인.',li:['SMS 연동여부·발송사 계정','발신자/관리자 수신번호','SMS·LMS·알림톡 잔량','고객/관리자 자동발송 설정 연결']},
+   smsBalance:true,sections:[{t:'문자(SMS) 연동',f:[['SMS 연동여부','toggle'],['사용 SMS사','sel','One Shot(원샷) …'],['원샷 ID','text'],['문자배달 홈페이지','text'],['발신자 휴대폰번호','text'],['관리자 수신번호','text']]}],foot:['수정'],extraBtns:[['고객발송 문자설정','ghost','set-sms-user'],['관리자발송 문자설정','ghost','set-sms-adm'],['문자발송내역 확인','ghost']]},
+ 'set-sms-user':{kind:'rules',menu:'환경설정',sub:'서비스연동',title:'고객용 자동발송(SMS)',en:'Auto SMS - User',path:'/sw-adm/basic/sms.user.php',
+   note:{p:'주문·배송 단계별로 고객에게 자동 발송되는 문자 설정.',li:['조건별 사용여부 ON/OFF','치환변수 포함 문구 편집','상황별 템플릿']},
+   cols:['조건','사용여부','SMS 내용','도움말'],rows:[['주문접수','on'],['입금확인','on'],['배송준비','off'],['상품발송(송장등록)','on'],['주문취소','on'],['회원가입 환영','off']],foot:['확인']},
+ 'set-sms-adm':{kind:'rules',menu:'환경설정',sub:'서비스연동',title:'관리자용 자동발송(SMS)',en:'Auto SMS - Admin',path:'/sw-adm/basic/sms.adm.php',
+   note:{p:'신규 주문·문의 등 발생 시 관리자에게 알림 문자 발송.',li:['이벤트별 사용여부','관리자 수신번호로 발송']},
+   cols:['조건','사용여부','SMS 내용','도움말'],rows:[['신규주문 발생','on'],['주문취소 요청','on'],['신규 상품문의','off'],['무통장 입금완료','on']],foot:['확인']},
+ 'set-delivery':{kind:'list',menu:'환경설정',sub:'서비스연동',title:'배송·택배 서비스 연동',en:'Delivery',path:'/sw-adm/basic/delivery.php',
+   note:{p:'사용 택배사 및 배송추적 URL 관리.',li:['택배사 추가/삭제','송장 조회 URL 연결','기본 택배사 지정']},
+   filters:[],cols:['기본','번호','고유번호','택배사명','배송추적URL','관리'],actions:[['택배사추가','pri']],total:5},
+ 'set-naverpay':{kind:'form',menu:'환경설정',sub:'서비스연동',title:'네이버페이 설정',en:'Naver Pay',path:'/sw-adm/basic/naverpay.php',
+   note:{p:'네이버쇼핑 노출 및 네이버페이 결제 연동.',li:['상점ID·인증키(certi/button/공통)','실운영/테스트 전환','상품DB URL 제출(네이버쇼핑 연동)']},
+   sections:[{t:'네이버페이 연동',f:[['사용여부','toggle'],['실운영 여부','radio','실운영·테스트'],['상점ID (shop_id)','text'],['가맹점 인증키 (certi_key)','text'],['버튼 인증키 (button_key)','text'],['네이버공통 인증키','text'],['운영도메인','text'],['네이버 연동URL','text'],['상품DB URL','text']]}],foot:['수정']},
+ 'set-delivery-fare':{kind:'list',menu:'환경설정',title:'지역(도서산간) 추가배송비 설정',en:'Extra Fare',path:'/sw-adm/basic/delivery.fare.php',
+   note:{p:'도서산간 등 지역별 추가배송비를 우편번호 기준으로 설정.',li:['우편번호 범위·시도별 추가요금','엑셀 일괄 등록','개별 추가/삭제/초기화']},
+   filters:[F_SEARCH],cols:['번호','우편번호','시도','지역 주소','추가배송비','등록일','설정'],actions:[['엑셀등록','pri'],['배송비추가','ghost'],['초기화','ghost'],['선택 일괄삭제','ghost']],total:142},
+ 'set-ipaccess':{kind:'form',menu:'환경설정',title:'IP접속제한 설정',en:'IP Access',path:'/sw-adm/basic/ipaccess.php',
+   note:{p:'관리자/쇼핑몰 접근을 IP 단위로 허용·차단.',li:['관리자 접속제한(허용 IP만 접근)','쇼핑몰 접속제한(차단 IP)','허용/불가 IP 목록 관리']},
+   sections:[{t:'관리자 IP접속제한 설정',f:[['접속제한 설정','toggle'],['접속가능 IP 등록','iplist'],['접속불가 IP 등록','iplist']]},{t:'쇼핑몰 IP접속제한 설정',f:[['접속제한 설정','toggle'],['접속불가 IP 등록','iplist']]}],foot:['설정']}
+};
+
+/* ============ sample cell generator ============ */
+const NAMES=['최병국','김서연','박준호','이하늘','정민재','쿡이에요','테스트'];
+const IDS=['bkchoi','seoyeon','jun_ho','skylee','mjjung','cook77','guest'];
+const PRODS=['알리오 X 01','완전좋아 가구','[친환경쌀] 천년미소 20kg','14k 골드 꼬임이어링','Silver 925 은반지','테스트 상품'];
+const DATES=['2026-08-12','2026-07-30','2026-07-18','2026-06-24','2026-05-10'];
+const ORD_ST=[['결제완료','p-ok'],['배송준비','p-warn'],['상품발송','p-info'],['상품수령','p-muted'],['구매완료','p-ok'],['주문취소요청','p-danger'],['주문취소완료','p-muted']];
+function won(n){return '<span class="tnum">'+n.toLocaleString()+'</span> 원';}
+function pill(t,c){return '<span class="pill '+c+'"><span class="dotp"></span>'+t+'</span>';}
+function cellFor(label,i){
+ const L=label,has=s=>L.indexOf(s)>-1;
+ if(has('이미지'))return '<div class="thumb">IMG</div>';
+ if(has('주문번호'))return '<span class="lnk mono">2026'+(8120-i).toString().padStart(4,'0')+'001</span>';
+ if(has('상품코드'))return '<span class="mono">G'+(10427-i).toString().padStart(5,'0')+'</span>';
+ if(L==='번호'||L==='순위')return '<span class="tnum">'+i+'</span>';
+ if(has('고유번호'))return '<span class="mono tnum">'+(4+i)+'</span>';
+ if(has('우편번호'))return '<span class="mono tnum">6'+(3100+i*7)+'</span>';
+ if(has('일시')||has('일자')||L==='가입일'||L==='등록일'||L==='변동일'||L==='생성일'||L==='탈퇴일'||has('방문일'))return '<span class="tnum sub">'+DATES[i%DATES.length]+'</span>';
+ if(has('노출기간'))return '<span class="tnum sub">2026-08-01 ~ 2026-08-31</span>';
+ if(L.indexOf('금액')>-1||L.indexOf('가격')>-1||has('단가')||has('옵션가')||has('적립금')||has('잔고')||has('배송비')||has('변동액'))return won([40500,63000,48000,31185,5000][i%5]);
+ if(has('수량'))return '<span class="tnum">'+(1+(i%3))+'</span>';
+ if(has('재고'))return '<span class="tnum">'+([128,42,7,0,310][i%5])+'</span>';
+ if(has('조회'))return '<span class="tnum sub">'+(412-i*37)+'</span>';
+ if(L==='주문상태'){const s=ORD_ST[i%ORD_ST.length];return pill(s[0],s[1]);}
+ if(L==='결제수단')return '<span class="sub">무통장입금</span>';
+ if(has('만족도'))return '<span style="color:var(--warn)">'+'★'.repeat(5-(i%2))+'<span style="color:var(--border-strong)">'+'★'.repeat(i%2)+'</span></span>';
+ if(has('답변여부'))return i%2? pill('답변완료','p-ok'):pill('미답변','p-danger');
+ if(L==='사용여부'||L==='기본'||has('노출여부')||has('표시여부'))return i%3===2? pill('미사용','p-muted'):pill('사용','p-ok');
+ if(L==='Best 상품')return i%2?pill('Best','p-info'):'<span class="sub">-</span>';
+ if(L==='New 상품')return i%2===0?pill('New','p-ok'):'<span class="sub">-</span>';
+ if(has('수신동의'))return '<span class="sub">SMS '+(i%2?'Y':'N')+' / 메일 '+(i%2?'N':'Y')+'</span>';
+ if(has('IP'))return '<span class="mono tnum">211.'+(36+i)+'.'+(120-i*3)+'.'+(5+i)+'</span>';
+ if(has('유형')&&L.indexOf('문의')<0)return ['구매적립','사용','관리자지급','구매적립','사용차감'][i%5];
+ if(has('문의유형'))return ['배송문의','상품문의','교환/반품','재입고','기타'][i%5];
+ if(has('유입경로')||has('유입'))return ['naver.com','google.com','직접입력','instagram.com','daum.net'][i%5];
+ if(has('키워드'))return '<span class="sub">tagoplus '+['쌀','가구','은반지','이어링','선물'][i%5]+'</span>';
+ if(has('브라우저'))return ['Chrome','Safari','Edge','Samsung','Firefox'][i%5];
+ if(has('운영체제')||has('OS'))return ['Windows','Android','iOS','macOS','Android'][i%5];
+ if(has('아이디')||L==='관리자 ID')return '<span class="mono">'+IDS[i%IDS.length]+'</span>';
+ if(has('그룹명'))return i===1?'최고관리자':'상품관리자';
+ if(L==='성명'||L==='주문자'||L==='받는이'||L==='작성자'||has('예금주')||has('관리자명'))return NAMES[i%NAMES.length];
+ if(has('연락처')||has('휴대폰')||has('전화'))return '<span class="mono tnum">010-'+(1234+i)+'-'+(5600+i*3)+'</span>';
+ if(has('주소'))return '<span class="sub">서울 영등포구 버드나루로 135</span>';
+ if(has('은행'))return ['국민','신한','우리'][i%3]+'은행';
+ if(has('계좌번호'))return '<span class="mono tnum">123-45-'+(678900+i)+'</span>';
+ if(has('택배사'))return ['CJ대한통운','롯데택배','한진택배'][i%3];
+ if(has('추적URL')||has('URL'))return '<span class="mono sub">https://tracker…</span>';
+ if(has('시도'))return ['제주특별자치도','인천광역시','경상북도'][i%3];
+ if(has('지역 주소'))return '<span class="sub">제주시 일원(도서)</span>';
+ if(has('상품분류/상품정보')||has('상품정보')||has('상품분류/정보'))return '<div><div>'+PRODS[i%PRODS.length]+'</div><div class="sub">주얼리 › 반지</div></div>';
+ if(has('주문상품'))return '<div>'+PRODS[i%PRODS.length]+'<div class="sub">옵션: 기본 / 1개</div></div>';
+ if(has('제목')||has('내용')||has('정보'))return '<span>'+['9월 업무시간 안내','배송 지연 안내','적립금 사용 방법','가을맞이 기획전'][i%4]+'</span>';
+ if(has('팝업제목'))return '회원가입 이벤트';
+ if(has('위치구분'))return ['메인 중앙','좌측 상단','전체'][i%3];
+ if(has('팝업타입'))return i%2?'레이어':'윈도우';
+ if(has('분류명'))return ['주얼리','생활/가구','식품','의류'][i%4];
+ if(has('진열여부'))return i%3===2?pill('미진열','p-muted'):pill('진열','p-ok');
+ if(has('진열순위'))return '<span class="tnum">'+i+'</span>';
+ if(has('탈퇴사유'))return ['서비스 불만','단순 변심','재가입 예정'][i%3];
+ if(has('지급/차감')||has('내역'))return '<span class="sub">구매확정 적립 (주문 2026…)</span>';
+ if(L==='설정'||L==='관리')return '<div class="row-act"><button class="btn sm" data-act="edit">수정</button><button class="btn sm danger" data-act="del">삭제</button></div>';
+ return '<span class="sub">—</span>';
+}
+
+/* ============ renderers ============ */
+function el(h){const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function specBox(n){ if(!n)return ''; return `<div class="spec"><span class="tag">기획</span><div class="body"><p>${n.p}</p>${n.li?'<ul>'+n.li.map(x=>'<li>'+x+'</li>').join('')+'</ul>':''}</div></div>`;}
+function iconFor(menu){const m={'주문배송':'order','상품관리':'goods','고객 및 문의관리':'member','프로모션':'promo','팝업 및 디자인관리':'design','게시판':'board','매출분석':'sales','접속통계':'counter','환경설정':'settings','HOME':'home'};return m[menu]||'settings';}
+function pageHead(s){return `<div class="crumb">${svg(iconFor(s.menu),'ico')}<b>${s.menu}</b> › <b>${s.title}</b></div><div class="page-h"><h1>${s.title}</h1><span class="en">${s.en||''}</span></div><div class="page-path"><span class="pill-path">${s.path}</span></div>`;}
+function toolKind(label){if(/엑셀/.test(label))return 'excel';if(/추가|등록|글쓰기/.test(label))return 'create';if(/삭제/.test(label))return 'bulkdel';if(/일괄수정|일괄설정/.test(label))return 'bulkedit';if(/초기화/.test(label))return 'reset';return 'generic';}
+function renderFilters(filters){
+ if(!filters||!filters.length)return '';
+ let h='<div class="filters">';
+ filters.forEach(f=>{
+   if(f.type==='period')h+=`<div class="field"><label>${f.label}</label><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input class="inp" disabled placeholder="시작일"><span class="sub">~</span><input class="inp" disabled placeholder="종료일"><div class="seg"><button>오늘</button><button>일주일</button><button class="on">한달</button><button>전체</button></div></div></div>`;
+   else if(f.type==='sel')h+=`<div class="field"><label>${f.label}</label><select class="inp">${(f.opt||['전체']).map(o=>'<option>'+o+'</option>').join('')}</select></div>`;
+   else h+=`<div class="field"><label>${f.label}</label><input class="inp wide" placeholder="검색어 입력"></div>`;
+ });
+ h+=`<div class="field"><label>&nbsp;</label><button class="btn pri" data-act="search">🔍 Search</button></div></div>`;
+ return h;
+}
+function toolbar(actions,total){
+ let h='<div class="toolbar">';
+ if(total!=null)h+=`<div style="font-size:12.5px;color:var(--muted)">총 <b style="color:var(--fg)">${total.toLocaleString()}</b> 건</div>`;
+ h+='<div class="sp"></div>';
+ (actions||[]).forEach(a=>h+=`<button class="btn ${a[1]||'pri'}" data-act="tool" data-kind="${toolKind(a[0])}">${a[0]}</button>`);
+ h+='</div>';return h;
+}
+function listTable(s,extraClass){
+ let rows='';for(let i=1;i<=6;i++){rows+='<tr><td style="text-align:center"><input type="checkbox"></td>'+s.cols.map(c=>{const cl=(c==='번호'||c==='순위')?' class="num"':'';return `<td${cl}>${cellFor(c,i)}</td>`;}).join('')+'</tr>';}
+ return `<div class="card"><div class="tbl-wrap"><table class="dt ${extraClass||''}"><thead><tr><th style="width:36px;text-align:center"><input type="checkbox"></th>${s.cols.map(c=>'<th'+((c==='번호'||c==='순위')?' class="num"':'')+'>'+c+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table></div><div class="pager"><button>‹</button><button class="on">1</button><button>2</button><button>3</button><button>›</button></div></div>`;
+}
+function renderList(s){
+ return pageHead(s)+specBox(s.note)+renderFilters(s.filters)+(s.treeHint?'<div class="notice-strip"><span class="tagn">TREE</span>1차 › 2차 › 3차 다단계 카테고리. 각 행에서 하위 분류 추가·순서 변경.</div>':'')+toolbar(s.actions,s.total)+listTable(s,'editable')+`<p class="sample-note">※ 행을 클릭하면 상세보기, <b>수정/삭제·추가</b> 버튼으로 편집할 수 있습니다. 데이터는 레이아웃 확인용 샘플입니다.</p>`;
+}
+function fieldInput(type,ph){
+ switch(type){
+  case 'toggle':return '<button class="switch on" data-act="switch"></button> <span class="sub" style="vertical-align:4px">사용</span>';
+  case 'radio':return '<span class="radios">'+(ph||'옵션1·옵션2').split('·').map((o,i)=>`<label data-act="radio"><span class="dotradio${i===0?' on':''}"></span>${o}</label>`).join('')+'</span>';
+  case 'sel':return `<select class="inp wide"><option>${(ph||'선택').split('/')[0]}</option></select>`+(ph?`<div class="hint">${ph}</div>`:'');
+  case 'num':return '<input class="inp" placeholder="0"><span class="sub"> 개</span>';
+  case 'price':return '<input class="inp" placeholder="0"><span class="sub"> 원</span>'+(ph?`<div class="hint">${ph}</div>`:'');
+  case 'range':return '<input class="inp" style="min-width:70px" placeholder="최소"> ~ <input class="inp" style="min-width:70px" placeholder="최대"><div class="hint">'+(ph||'')+'</div>';
+  case 'ta':return '<textarea class="ta" placeholder="'+(ph||'내용 입력')+'"></textarea>';
+  case 'editor':return '<div class="ta" style="min-height:120px;color:var(--faint)">⌨ 에디터(위지윅) 영역 — 이미지·서식 지원</div>';
+  case 'file':return '<span class="btn sm ghost">파일 선택</span> <span class="sub">'+(ph||'권장 사이즈 안내')+'</span>';
+  case 'tags':return '<span style="display:flex;gap:6px;flex-wrap:wrap">'+(ph||'태그1·태그2').split('·').map(t=>'<span class="pill p-muted">'+t+'</span>').join('')+'</span>';
+  case 'chips':return '<span style="display:flex;gap:6px;flex-wrap:wrap">'+(ph||'A·B·C').split('·').map((t,i)=>'<span class="pill '+(i%2?'p-info':'p-ok')+'">'+t+'</span>').join('')+'</span>';
+  case 'table':return '<div class="ta" style="min-height:58px;color:var(--faint)">옵션값 입력 → 조합 자동 생성 · 조합별 추가금액/재고</div>';
+  case 'iplist':return '<div style="display:flex;gap:6px"><input class="inp wide" placeholder="예) 211.36.120.5"> <button class="btn sm" data-act="save">추가</button></div><div class="hint">등록된 IP 목록이 아래 표로 표시됩니다.</div>';
+  default:return '<input class="inp wide" placeholder="'+(ph||'입력')+'">';
+ }
+}
+function renderForm(s){
+ let secs=s.sections.map(sec=>`<div class="card"><div class="card-h"><h3><span class="dot"></span>${sec.t}</h3></div><div class="card-b flush"><table class="form-tbl"><tbody>${sec.f.map(f=>`<tr><th>${f[0]}${f[3]?'<span class="req">*</span>':''}</th><td>${fieldInput(f[1],f[2])}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
+ let bal=s.smsBalance?`<div class="grid stat-row" style="margin-bottom:18px"><div class="stat"><div class="k">SMS(단문)</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">LMS(장문)</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">알림톡</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">문자 충전</div><div class="v" style="font-size:16px;margin-top:11px"><button class="btn sm pri" data-act="save">충전하기</button></div></div></div>`:'';
+ let extra=s.extraBtns?`<div class="toolbar" style="margin-bottom:18px"><div class="sp"></div>${s.extraBtns.map(b=>`<button class="btn ${b[1]||'ghost'}" ${b[2]?`data-go="${b[2]}"`:'data-act="save"'}>${b[0]}</button>`).join('')}</div>`:'';
+ let foot=s.foot?`<div class="card"><div class="form-foot">${s.foot.map((b,i)=>`<button class="btn ${i===0?'pri':''}" style="min-width:110px" data-act="save">${b}</button>`).join('')}</div></div>`:'';
+ return pageHead(s)+specBox(s.note)+bal+extra+secs+foot;
+}
+function renderEditor(s){
+ let eds=s.editors.map(t=>`<div class="card"><div class="card-h"><h3><span class="dot"></span>${t}</h3></div><div class="card-b"><div class="ta" style="min-height:160px;color:var(--faint)">⌨ ${t} 본문 — 위지윅 에디터 영역</div></div></div>`).join('');
+ return pageHead(s)+specBox(s.note)+eds+`<div class="card"><div class="form-foot"><button class="btn pri" style="min-width:120px" data-act="save">${(s.foot&&s.foot[0])||'저장'}</button></div></div>`;
+}
+function renderRules(s){
+ let rows=s.rows.map(r=>`<tr><td><b>${r[0]}</b></td><td style="text-align:center"><button class="switch ${r[1]==='on'?'on':''}" data-act="switch"></button></td><td><span class="sub">[고객명]님의 주문이 ${r[0]} 되었습니다… <span style="color:var(--pri)">치환변수</span> 지원</span></td><td><button class="btn sm" data-act="ruleedit" data-cond="${r[0]}">편집</button></td></tr>`).join('');
+ return pageHead(s)+specBox(s.note)+`<div class="card"><div class="tbl-wrap"><table><thead><tr>${s.cols.map(c=>'<th>'+c+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table></div></div><div class="card"><div class="form-foot"><button class="btn pri" style="min-width:110px" data-act="save">${(s.foot&&s.foot[0])||'확인'}</button></div></div>`;
+}
+function barChart(data,labels,accent){
+ const W=640,H=220,pad=34,bw=(W-pad*2)/data.length,max=Math.max(...data)*1.15;
+ let bars='',lbls='',grid='';
+ for(let g=0;g<=4;g++){const y=H-pad-(H-pad*2)*g/4;grid+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${pad-6}" y="${y+3}" text-anchor="end" font-size="9" fill="var(--muted)">${Math.round(max*g/4).toLocaleString()}</text>`;}
+ data.forEach((v,i)=>{const h=(H-pad*2)*v/max,x=pad+bw*i+bw*0.22,y=H-pad-h;bars+=`<rect x="${x}" y="${y}" width="${bw*0.56}" height="${h}" rx="3" fill="${accent||'var(--pri)'}"/><text x="${x+bw*0.28}" y="${y-5}" text-anchor="middle" font-size="9" fill="var(--fg-2)" font-weight="600">${v.toLocaleString()}</text>`;lbls+=`<text x="${x+bw*0.28}" y="${H-pad+14}" text-anchor="middle" font-size="9.5" fill="var(--muted)">${labels[i]}</text>`;});
+ return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${grid}${bars}${lbls}</svg>`;
+}
+function renderStats(s){
+ const months=['01월','02월','03월','04월','05월','06월','07월','08월','09월','10월'],data=[320,410,380,520,470,1040,560,870,640,720];
+ let body;
+ if(s.chart==='rank'){
+   const rk={'유입 사이트':[['naver.com',1820],['google.com',940],['직접 유입',610],['instagram.com',430],['daum.net',210]],'검색 키워드':[['tagoplus 쌀',320],['천년미소',240],['은반지 선물',180],['14k 이어링',120],['친환경 쌀',90]],'브라우저':[['Chrome',62],['Safari',21],['Samsung',8],['Edge',6],['Firefox',3]],'운영체제':[['Android',44],['Windows',31],['iOS',18],['macOS',7]]}[s.rankLabel];
+   const mx=rk[0][1];body=`<div class="card-b"><table style="font-size:12.5px"><tbody>${rk.map((r,i)=>`<tr><td style="width:30px;text-align:center;color:var(--muted)">${i+1}</td><td style="width:150px">${r[0]}</td><td><div style="background:var(--surface-3);border-radius:4px;height:14px;overflow:hidden"><div style="width:${Math.round(r[1]/mx*100)}%;height:100%;background:var(--pri)"></div></div></td><td style="width:70px;text-align:right" class="tnum">${r[1].toLocaleString()}${(s.rankLabel==='브라우저'||s.rankLabel==='운영체제')?'%':''}</td></tr>`).join('')}</tbody></table></div>`;
+ } else if(s.chart==='device'){body=`<div class="card-b"><div class="chart-wrap">${barChart([8600,5200],['PC','Mobile'])}</div><div class="legend"><span><i style="background:var(--pri)"></i>디바이스별 매출/접속 (예시)</span></div></div>`;}
+ else body=`<div class="card-b"><div class="chart-wrap"><div class="chart-cap">${s.title} (예시)</div>${barChart(data,months)}</div><div class="legend"><span><i style="background:var(--pri)"></i>${s.menu==='매출분석'?'매출액(천원)':'방문수'}</span></div></div>`;
+ let segBar=(s.segs&&s.segs.length)?`<div class="toolbar"><div class="seg">${s.segs.map((g,i)=>`<button class="${i===1?'on':''}">${g}</button>`).join('')}</div><div class="sp"></div>${s.resetBtn?'<button class="btn ghost" data-act="tool" data-kind="reset">초기화</button>':''}</div>`:(s.resetBtn?'<div class="toolbar"><div class="sp"></div><button class="btn ghost" data-act="tool" data-kind="reset">초기화</button></div>':'');
+ let out=pageHead(s)+specBox(s.note)+segBar+renderFilters(s.filters)+`<div class="card"><div class="card-h"><h3><span class="dot"></span>${s.title}</h3><span class="sample-badge">SAMPLE</span></div>${body}</div>`;
+ if(s.cols){let rows='';for(let i=1;i<=6;i++){rows+='<tr>'+s.cols.map(c=>`<td${c==='번호'?' class="num"':''}>${cellFor(c,i)}</td>`).join('')+'</tr>';}out+=`<div class="card"><div class="tbl-wrap"><table class="dt"><thead><tr>${s.cols.map(c=>'<th'+(c==='번호'?' class="num"':'')+'>'+c+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table></div></div>`;}
+ return out;
+}
+function renderBoard(s){
+ let tabs=`<div class="toolbar"><div class="seg">${s.tabs.map((t,i)=>`<button class="${i===0?'on':''}">${t}</button>`).join('')}</div></div>`;
+ let rows='';for(let i=1;i<=6;i++){rows+='<tr><td style="text-align:center"><input type="checkbox"></td>'+s.cols.map(c=>`<td${c==='번호'||c==='조회'?' class="num"':''}>${cellFor(c,i)}</td>`).join('')+'</tr>';}
+ return pageHead(s)+specBox(s.note)+tabs+renderFilters(s.filters)+toolbar(s.actions,s.total)+`<div class="card"><div class="tbl-wrap"><table class="dt editable"><thead><tr><th style="width:36px;text-align:center"><input type="checkbox"></th>${s.cols.map(c=>'<th'+(c==='번호'||c==='조회'?' class="num"':'')+'>'+c+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table></div><div class="pager"><button>‹</button><button class="on">1</button><button>2</button><button>›</button></div></div>`;
+}
+function renderExternal(s){return pageHead(s)+specBox(s.note)+`<div class="ext-card"><div class="big">${svg('pay','ico')}</div><div><h3 style="font-size:15px;margin-bottom:6px">외부 연동 화면</h3><p style="margin:0 0 12px;color:var(--fg-2);font-size:13px">이 메뉴는 PG사(KCP) 상점관리자 포털로 새 창 연결됩니다. 결제 승인/취소/정산은 해당 포털에서 처리합니다.</p><a class="btn pri" href="https://partner.kcp.co.kr" target="_blank" rel="noopener">KCP 상점관리자 열기 ↗</a></div></div>`;}
+function renderDashboard(s){
+ const tiles=[['오늘 주문','order','3 건','어제 대비 <b class="up">+1</b>','order-list'],['오늘 매출','sales','₩ 128,500','어제 대비 <b class="up">+42%</b>','sales-period'],['신규 회원','member','5 명','이번 주 <b class="up">+18</b>','member-list'],['미답변 문의','board','2 건','빠른 응대 필요','member-qna']];
+ const months=['01','02','03','04','05','06','07','08','09','10'];
+ return pageHead(s)+`<div class="notice-strip"><span class="tagn">공지사항</span>[2026-09-23] 9월 23일 업무시간 안내 &nbsp;·&nbsp; <span class="sub">호스팅 만료일 확인 필요</span></div>`+
+ `<div class="grid stat-row" style="margin-bottom:16px">${tiles.map(t=>`<div class="stat" data-go="${t[4]}" style="cursor:pointer"><div class="k">${svg(t[1],'ic')} ${t[0]}</div><div class="v tnum">${t[2]}</div><div class="d">${t[3]}</div></div>`).join('')}</div>`+
+ `<div class="card"><div class="card-h"><h3><span class="dot"></span>서비스 현황 및 고객지원</h3><div style="display:flex;gap:6px"><button class="btn sm" data-act="save">서비스관리</button><button class="btn sm ghost" data-act="save">고객지원</button></div></div><div class="card-b flush"><table><thead><tr><th>서비스</th><th>내용</th><th>만료일</th><th>이용료</th></tr></thead><tbody><tr><td><span class="lnk">호스팅</span></td><td>tagoplus 쇼핑몰(통합)</td><td><span class="tnum">2026-12-31</span></td><td class="tnum">0원 / 1개월</td></tr></tbody></table></div></div>`+
+ `<div class="grid two-col"><div class="card"><div class="card-h"><h3><span class="dot"></span>접속통계 <span class="sub">월간 PC·모바일</span></h3><span class="sample-badge">SAMPLE</span></div><div class="card-b"><div class="chart-wrap">${barChart([320,410,380,520,470,1040,560,870,640,720],months)}</div><div class="legend"><span><i style="background:var(--pri)"></i>방문수</span></div></div></div>`+
+ `<div class="card"><div class="card-h"><h3><span class="dot"></span>매출통계 <span class="sub">최근 6개월</span></h3><span class="sample-badge">SAMPLE</span></div><div class="card-b"><div class="chart-wrap">${barChart([120,180,90,260,410,320],['26/05','26/06','26/07','26/08','26/09','26/10'],'var(--leaf)')}</div><div class="legend"><span><i style="background:var(--leaf)"></i>매출액(만원)</span></div></div></div></div><p class="sample-note">※ 지표·차트는 레이아웃 확인용 샘플 수치입니다. 상단 카드를 클릭하면 해당 메뉴로 이동합니다.</p>`;
+}
+function renderOverview(){
+ const groups=NAV.filter(n=>n.items);
+ let cards=groups.map(g=>`<div class="ov-card"><h4>${svg(g.icon,'ico')} ${g.group}<span class="cnt">${g.items.filter(i=>!i[0].startsWith('sub:')).length}개</span></h4><ul>${g.items.map(i=>i[0].startsWith('sub:')?`<li style="color:var(--faint);font-size:11px;letter-spacing:.03em">— ${i[0].slice(4)} —</li>`:`<li><button data-go="${i[0]}">${i[1]}<span class="sl">${(S[i[0]]&&S[i[0]].path||'').replace('/sw-adm/','')}</span></button></li>`).join('')}</ul></div>`).join('');
+ return `<div class="ov-hero"><h1>tagoplus · 관리자 기획서</h1><p>tagoplus 쇼핑몰 운영 관리자(Admin)의 전체 정보구조(IA)와 화면을 담은 네비게이션 프로토타입입니다. 좌측 메뉴에서 각 화면의 구성·입력항목·기능을 클릭해 확인할 수 있습니다.</p><div class="meta"><span class="chip">서비스 <b>tagoplus</b></span><span class="chip">대메뉴 <b>10</b></span><span class="chip">화면 <b>${Object.keys(S).length}</b></span><span class="chip">경로 <b>/sw-adm/</b></span></div></div>`+
+   `<div class="card"><div class="card-h"><h3><span class="dot"></span>공통 UI · 레이아웃 기준</h3></div><div class="card-b"><ul style="margin:0;padding-left:18px;color:var(--fg-2);font-size:13px;line-height:1.9"><li><b>상단바</b>: tagoplus 로고, 퀵아이콘(주문·상품·회원·설정), 알림, 홈페이지, 관리자 계정, 테마 전환</li><li><b>좌측 사이드바</b>: 10개 대메뉴 · 그룹 펼침/접힘 · 현재 화면 하이라이트</li><li><b>본문</b>: 브레드크럼 → 화면 제목 → <span style="color:var(--pri)">기획 노트</span> → 필터바 → 데이터/폼 영역</li><li><b>인터랙션</b>: 행 클릭 상세, 수정/삭제/추가 모달, 저장 토스트, 다크/라이트 전환, 모바일 드로어</li></ul></div></div>`+
+   `<h3 style="font-size:15px;margin:22px 0 12px">전체 메뉴 구조 (클릭하여 이동)</h3><div class="ov-grid">${cards}</div>`+
+   `<div class="card"><div class="card-h"><h3><span class="dot"></span>주문상태 값 정의</h3></div><div class="card-b"><div class="legend-box">${ORD_ST.map(s=>pill(s[0],s[1])).join('')}</div><p class="hint" style="margin-top:10px">결제완료 → 배송준비 → 상품발송 → 상품수령 → 구매완료 순으로 진행되며, 취소요청은 별도 승인 후 취소완료 처리됩니다.</p></div></div>`;
+}
+const RENDER={dashboard:renderDashboard,list:renderList,form:renderForm,editor:renderEditor,rules:renderRules,stats:renderStats,board:renderBoard,external:renderExternal};
+
+/* ============ toast & modal ============ */
+function toast(msg){const t=el(`<div class="toast">${msg}</div>`);document.getElementById('toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),320);},2200);}
+let modalEl=null;
+function closeModal(){if(modalEl){modalEl.remove();modalEl=null;}}
+function openModal(title,bodyHTML,footBtns){
+ closeModal();
+ const foot=footBtns.map((b,i)=>`<button class="btn ${b.cls||''}" data-mi="${i}">${b.label}</button>`).join('');
+ modalEl=el(`<div class="ov-modal"><div class="modal-box"><div class="modal-h"><h3>${title}</h3><button class="x" data-close>×</button></div><div class="modal-b">${bodyHTML}</div><div class="modal-f">${foot}</div></div></div>`);
+ document.body.appendChild(modalEl);
+ modalEl.addEventListener('click',e=>{if(e.target===modalEl||e.target.hasAttribute('data-close'))closeModal();const mi=e.target.closest('[data-mi]');if(mi){const b=footBtns[+mi.dataset.mi];if(b.on){if(b.on(modalEl)===false)return;}closeModal();}});
+}
+function confirmModal(msg,onYes){openModal('확인',`<div class="modal-msg">${msg}</div>`,[{label:'취소'},{label:'확인',cls:'danger',on:onYes}]);}
+
+/* record detail / edit / create */
+const SKIP=['설정','관리','도움말'];
+function pickTitle(cells,fallback){for(const k of ['제목','상품명','주문번호','아이디','성명','팝업제목','분류명','택배사명','은행명','상품정보']){const c=cells.find(x=>x.L.indexOf(k)>-1);if(c&&c.text)return c.text;}return fallback;}
+function collect(tr){
+ const table=tr.closest('table'),ths=[...table.tHead.rows[0].cells];
+ return ths.map((th,idx)=>({L:th.textContent.trim(),idx,cell:tr.cells[idx],text:(tr.cells[idx]?tr.cells[idx].textContent.trim():'')})).filter(c=>c.L && !c.cell.querySelector('input[type=checkbox]'));
+}
+function recordBody(items,editable){
+ return `<table class="form-tbl"><tbody>${items.filter(c=>!SKIP.includes(c.L)).map(c=>{
+   if(c.L.indexOf('이미지')>-1)return `<tr><th>${c.L}</th><td><div class="thumb">IMG</div></td></tr>`;
+   const val=esc(c.text);
+   return `<tr><th>${c.L}</th><td><input class="inp wide" data-idx="${c.idx}" value="${val}" ${editable?'':'disabled'}></td></tr>`;
+ }).join('')}</tbody></table>`;
+}
+function openRecordModal(tr,mode){
+ const items=collect(tr),title=pickTitle(items,'상세 정보');
+ const editable=mode==='edit';
+ const body=recordBody(items,editable);
+ const foot=editable?[{label:'취소'},{label:'저장',cls:'pri',on:m=>{m.querySelectorAll('input[data-idx]').forEach(inp=>{const td=tr.cells[+inp.dataset.idx];if(td&&!td.querySelector('.thumb'))td.textContent=inp.value;});toast('수정 내용을 저장했습니다 <b>(데모)</b>');}}]:[{label:'닫기'},{label:'수정',cls:'pri',on:()=>{setTimeout(()=>openRecordModal(tr,'edit'),0);}}];
+ openModal(mode==='edit'?title+' · 수정':title,body,foot);
+}
+function openCreateModal(table,label){
+ const ths=[...table.tHead.rows[0].cells];
+ const cols=ths.map(th=>th.textContent.trim()).filter(L=>L && !['번호','순위','설정','관리','도움말','기본'].includes(L) && L.indexOf('이미지')<0);
+ const body=`<table class="form-tbl"><tbody>${cols.map(L=>`<tr><th>${L}</th><td><input class="inp wide" data-col="${esc(L)}" placeholder="입력"></td></tr>`).join('')}</tbody></table>`;
+ openModal((label||'새 항목')+' 등록',body,[{label:'취소'},{label:'저장',cls:'pri',on:m=>{
+   const vals={};m.querySelectorAll('input[data-col]').forEach(inp=>vals[inp.dataset.col]=inp.value);
+   const n=table.tBodies[0].rows.length+1;
+   const tds=ths.map(th=>{const L=th.textContent.trim();
+     if(th.querySelector('input[type=checkbox]')||L==='')return '<td style="text-align:center"><input type="checkbox"></td>';
+     if(L==='번호'||L==='순위')return '<td class="num"><span class="tnum">'+n+'</span></td>';
+     if(L.indexOf('이미지')>-1)return '<td><div class="thumb">IMG</div></td>';
+     if(L==='설정'||L==='관리')return '<td><div class="row-act"><button class="btn sm" data-act="edit">수정</button><button class="btn sm danger" data-act="del">삭제</button></div></td>';
+     if(L==='도움말')return '<td><button class="btn sm" data-act="ruleedit">편집</button></td>';
+     return '<td>'+(vals[L]?esc(vals[L]):'<span class="sub">-</span>')+'</td>';});
+   table.tBodies[0].insertAdjacentHTML('afterbegin','<tr>'+tds.join('')+'</tr>');
+   toast('새 항목을 등록했습니다 <b>(데모)</b>');
+ }}]);
+}
+
+/* ============ delegated interactions ============ */
+const view=document.getElementById('view');
+view.addEventListener('click',function(e){
+ if(e.target.matches('thead input[type=checkbox]')){const tb=e.target.closest('table').tBodies[0];tb.querySelectorAll('input[type=checkbox]').forEach(x=>x.checked=e.target.checked);return;}
+ if(e.target.closest('.switch[data-act="switch"]')){e.target.closest('.switch').classList.toggle('on');return;}
+ const radio=e.target.closest('[data-act="radio"]');
+ if(radio){radio.parentElement.querySelectorAll('.dotradio').forEach(d=>d.classList.remove('on'));radio.querySelector('.dotradio').classList.add('on');return;}
+ const b=e.target.closest('button,a,[data-go]');
+ if(b){
+   if(b.tagName==='A')return;
+   if(b.dataset.go){go(b.dataset.go);return;}
+   const seg=b.closest('.seg');
+   if(seg&&b.tagName==='BUTTON'){[...seg.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');toast(b.textContent.trim()+' 기준으로 전환 <b>(데모)</b>');return;}
+   const pg=b.closest('.pager');
+   if(pg){[...pg.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));if(/^\d+$/.test(b.textContent.trim()))b.classList.add('on');return;}
+   const act=b.dataset.act;
+   if(act==='search'){toast('검색 조건으로 조회했습니다 <b>(데모)</b>');return;}
+   if(act==='edit'){openRecordModal(b.closest('tr'),'edit');return;}
+   if(act==='del'){const tr=b.closest('tr');confirmModal('이 항목을 삭제하시겠습니까?',()=>{tr.remove();toast('삭제되었습니다 <b>(데모)</b>');});return;}
+   if(act==='ruleedit'){openModal((b.dataset.cond||'문구')+' 문자 편집',`<div style="padding:14px 16px"><textarea class="ta" style="min-height:120px">[고객명]님, 주문이 정상 처리되었습니다. 감사합니다.</textarea><div class="hint">[고객명] [주문번호] [상품명] [금액] 등 치환변수 사용 가능</div></div>`,[{label:'취소'},{label:'저장',cls:'pri',on:()=>toast('문구를 저장했습니다 <b>(데모)</b>')}]);return;}
+   if(act==='save'){toast((b.textContent.trim()||'저장')+' 완료 <b>(데모)</b>');return;}
+   if(act==='tool'){handleTool(b);return;}
+   return;
+ }
+ const tr=e.target.closest('tbody tr');
+ if(tr&&tr.closest('table.dt')&&!e.target.closest('input,button,a')){openRecordModal(tr,'view');}
+});
+function nearestTable(b){const root=b.closest('.main-inner');return (root&&root.querySelector('table.editable'))||b.closest('.card')&&b.closest('.card').querySelector('table');}
+function handleTool(b){
+ const kind=b.dataset.kind,label=b.textContent.trim();
+ if(kind==='create'){const t=nearestTable(b);if(t)openCreateModal(t,label);else toast(label+' <b>(데모)</b>');return;}
+ if(kind==='excel'){toast('엑셀 파일을 내보냈습니다 <b>(데모)</b>');return;}
+ if(kind==='bulkdel'){const t=nearestTable(b);const checked=t?[...t.tBodies[0].querySelectorAll('input[type=checkbox]:checked')]:[];if(!checked.length){toast('선택된 항목이 없습니다');return;}confirmModal(`선택한 ${checked.length}건을 삭제하시겠습니까?`,()=>{checked.forEach(c=>c.closest('tr').remove());toast(checked.length+'건을 삭제했습니다 <b>(데모)</b>');});return;}
+ if(kind==='bulkedit'){toast('선택 항목을 일괄 수정했습니다 <b>(데모)</b>');return;}
+ if(kind==='reset'){confirmModal('통계를 초기화하시겠습니까?',()=>toast('초기화되었습니다 <b>(데모)</b>'));return;}
+ toast(label+' <b>(데모)</b>');
+}
+
+/* ============ sidebar / routing ============ */
+function buildSidebar(){
+ const sb=document.getElementById('sidebar');let h='';
+ NAV.forEach((n,gi)=>{
+   if(n.single){h+=`<button class="nav-single" data-go="${n.id}">${svg(n.icon)}<span>${n.label}</span></button>`;}
+   else{h+=`<div class="nav-group" data-gi="${gi}"><button class="nav-head"><span class="hl">${svg(n.icon)}<span>${n.group}</span></span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button><div class="submenu">`;
+     n.items.forEach(it=>{if(it[0].startsWith('sub:'))h+=`<div class="sub-label">${it[0].slice(4)}</div>`;else h+=`<button class="sub-item" data-go="${it[0]}">${it[1]}</button>`;});
+     h+='</div></div>';}
+ });
+ sb.innerHTML=h;
+ sb.querySelectorAll('.nav-head').forEach(bt=>bt.addEventListener('click',()=>bt.parentElement.classList.toggle('open')));
+ sb.querySelectorAll('[data-go]').forEach(bt=>bt.addEventListener('click',()=>go(bt.dataset.go)));
+}
+function buildQuick(){
+ const q=document.getElementById('qicks');
+ q.innerHTML=QUICK.map(x=>`<button class="qick" data-go="${x[0]}" style="background:${x[2]}" title="${LABEL[x[0]]||''}">${svg(x[1])}</button>`).join('');
+ q.querySelectorAll('[data-go]').forEach(bt=>bt.addEventListener('click',()=>go(bt.dataset.go)));
+}
+const LABEL={};NAV.forEach(n=>{if(n.single)LABEL[n.id]=n.label;else if(n.items)n.items.forEach(it=>{if(!it[0].startsWith('sub:'))LABEL[it[0]]=it[1];});});
+function setActive(id){
+ document.querySelectorAll('.sidebar [data-go]').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+ NAV.forEach((n,gi)=>{if(n.items&&n.items.some(it=>it[0]===id)){const g=document.querySelector(`.nav-group[data-gi="${gi}"]`);if(g)g.classList.add('open');}});
+}
+function go(id){
+ closeModal();
+ if(id==='overview')view.innerHTML=renderOverview();
+ else{const s=S[id];if(!s)return;view.innerHTML=(RENDER[s.kind]||renderList)(s);}
+ setActive(id);try{location.hash=id;}catch(e){}
+ window.scrollTo(0,0);closeDrawer();
+}
+
+/* drawer */
+function openDrawer(){document.getElementById('sidebar').classList.add('open');document.getElementById('scrim').classList.add('show');}
+function closeDrawer(){document.getElementById('sidebar').classList.remove('open');document.getElementById('scrim').classList.remove('show');}
+document.getElementById('hamb').addEventListener('click',openDrawer);
+document.getElementById('scrim').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* theme */
+function applyTheme(t){const r=document.documentElement;if(t)r.setAttribute('data-theme',t);document.getElementById('theme-tx').textContent=(t==='dark')?'라이트':'다크';try{localStorage.setItem('sw-theme',t);}catch(e){}}
+document.getElementById('theme').addEventListener('click',()=>{const cur=document.documentElement.getAttribute('data-theme');let next;if(cur==='dark')next='light';else if(cur==='light')next='dark';else next=matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark';applyTheme(next);});
+(function(){let t=null;try{t=localStorage.getItem('sw-theme');}catch(e){}if(t)applyTheme(t);else document.getElementById('theme-tx').textContent='다크';})();
+
+/* boot */
+buildSidebar();buildQuick();
+const start=(location.hash||'').replace('#','');
+go((S[start]||start==='overview')?start:'overview');
+</script>
+
+</body>
+</html>

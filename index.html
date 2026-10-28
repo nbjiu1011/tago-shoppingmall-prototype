@@ -256,7 +256,22 @@ td.num,th.num{text-align:center;color:var(--muted)}
   .two-col{grid-template-columns:1fr}
 }
 @media (max-width:760px){.qicks{display:none}}
-@media (max-width:560px){.stat-row{grid-template-columns:1fr}.brand .adm{display:none}.page-h h1{font-size:19px}.form-tbl th{width:116px}}
+@media (max-width:560px){
+  .stat-row{grid-template-columns:1fr}
+  .brand .adm{display:none}.brand{font-size:15px}
+  .page-h h1{font-size:19px}.form-tbl th{width:112px}
+  #homebtn{display:none}
+  .top-user span{display:none}.top-user{gap:0}
+  .topbar{gap:8px}
+  .filters{padding:11px}
+  .form-foot .btn{min-width:0;flex:1}
+}
+@media (max-width:420px){
+  .form-tbl th{display:block;width:auto;border-right:0;padding-bottom:4px}
+  .form-tbl td{display:block}
+  .form-tbl tr{display:block;border-bottom:1px solid var(--border)}
+  .form-tbl tbody td{border-bottom:0}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -269,7 +284,7 @@ td.num,th.num{text-align:center;color:var(--muted)}
     <div class="top-sp"></div>
     <span class="bell top-btn" title="알림"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg><span class="b">0</span></span>
     <button class="top-btn" id="theme"><span id="theme-tx">다크</span></button>
-    <button class="top-btn" title="홈페이지(새 창)">🏠 홈페이지</button>
+    <button class="top-btn" id="homebtn" title="홈페이지(새 창)">🏠 홈페이지</button>
     <div class="top-user"><span class="av">최</span><span>최고관리자</span></div>
   </header>
   <div class="layout">
@@ -413,11 +428,11 @@ const S={
  'set-basic':{kind:'form',menu:'환경설정',title:'기본 환경설정',en:'Mall Information',path:'/sw-adm/basic/',
    note:{p:'쇼핑몰 운영의 기준이 되는 기본·회사·정책·SEO·메일 설정.',li:['쇼핑몰/회사 기본정보(사업자·통신판매번호 등)','배송비·무료배송조건 등 운영정책','SNS 채널·SEO 메타·네이버 SMTP','가입불가 ID 등 기타']},
    sections:[
-     {t:'기본정보 설정',f:[['쇼핑몰명','text','',1],['쇼핑몰URL','text'],['대표메일(주문확인)','text'],['개인정보관리자','text']]},
-     {t:'회사정보 설정',f:[['상호명','text'],['대표자명','text'],['사업자번호','text'],['통신판매신고번호','text'],['대표전화','text'],['FAX 번호','text'],['사업장주소','text','우편번호+주소']]},
+     {t:'기본정보 설정',f:[['쇼핑몰명','text','',1,'tagoplus'],['쇼핑몰URL','text','',0,'https://tagoplus.co.kr'],['대표메일(주문확인)','text','',0,'admin@tagoplus.co.kr'],['개인정보관리자','text','',0,'관리자']]},
+     {t:'회사정보 설정',f:[['상호명','text','',0,'(주)타고플러스'],['대표자명','text','',0,'이범재'],['사업자번호','text','',0,'107-86-87689'],['통신판매신고번호','text','',0,'제19-5147호'],['대표전화','text','',0,'1644-5805'],['FAX 번호','text'],['사업장주소','text','우편번호+주소',0,'서울시 영등포구 버드나루로 135, 8층']]},
      {t:'쇼핑몰 운영정책 설정',f:[['기본배송비','price'],['무료배송조건','price','N원 이상'],['장바구니 보관기간','sel','7일/15일/30일'],['마우스 우클릭','radio','허용·방지']]},
      {t:'소셜 네트워크 서비스(SNS) 설정',f:[['카카오스토리','text'],['페이스북','text'],['인스타그램','text'],['유튜브','text'],['네이버블로그','text']]},
-     {t:'쇼핑몰정보(SEO) 설정',f:[['쇼핑몰 타이틀','text'],['검색키워드','text','meta keywords'],['쇼핑몰 간략설명','ta'],['네이버(site-verification)','text'],['CUSTOMER CENTER','text','고객센터 안내문구']]},
+     {t:'쇼핑몰정보(SEO) 설정',f:[['쇼핑몰 타이틀','text'],['검색키워드','text','meta keywords'],['쇼핑몰 간략설명','ta'],['네이버(site-verification)','text'],['CUSTOMER CENTER','text','고객센터 안내문구',0,'1644-5805 / admin@tagoplus.co.kr']]},
      {t:'네이버 SMTP 설정',f:[['네이버 SMTP 사용여부','toggle'],['네이버 아이디','text'],['네이버 비밀번호','text']]},
      {t:'기타 설정',f:[['가입불가ID','ta','금지 아이디 목록']]}
    ],foot:['저장']},
@@ -552,13 +567,14 @@ function listTable(s,extraClass){
 function renderList(s){
  return pageHead(s)+specBox(s.note)+renderFilters(s.filters)+(s.treeHint?'<div class="notice-strip"><span class="tagn">TREE</span>1차 › 2차 › 3차 다단계 카테고리. 각 행에서 하위 분류 추가·순서 변경.</div>':'')+toolbar(s.actions,s.total)+listTable(s,'editable')+`<p class="sample-note">※ 행을 클릭하면 상세보기, <b>수정/삭제·추가</b> 버튼으로 편집할 수 있습니다. 데이터는 레이아웃 확인용 샘플입니다.</p>`;
 }
-function fieldInput(type,ph){
+function fieldInput(type,ph,val){
+ const v=val?esc(val):'';
  switch(type){
   case 'toggle':return '<button class="switch on" data-act="switch"></button> <span class="sub" style="vertical-align:4px">사용</span>';
   case 'radio':return '<span class="radios">'+(ph||'옵션1·옵션2').split('·').map((o,i)=>`<label data-act="radio"><span class="dotradio${i===0?' on':''}"></span>${o}</label>`).join('')+'</span>';
   case 'sel':return `<select class="inp wide"><option>${(ph||'선택').split('/')[0]}</option></select>`+(ph?`<div class="hint">${ph}</div>`:'');
   case 'num':return '<input class="inp" placeholder="0"><span class="sub"> 개</span>';
-  case 'price':return '<input class="inp" placeholder="0"><span class="sub"> 원</span>'+(ph?`<div class="hint">${ph}</div>`:'');
+  case 'price':return '<input class="inp" value="'+v+'" placeholder="0"><span class="sub"> 원</span>'+(ph?`<div class="hint">${ph}</div>`:'');
   case 'range':return '<input class="inp" style="min-width:70px" placeholder="최소"> ~ <input class="inp" style="min-width:70px" placeholder="최대"><div class="hint">'+(ph||'')+'</div>';
   case 'ta':return '<textarea class="ta" placeholder="'+(ph||'내용 입력')+'"></textarea>';
   case 'editor':return '<div class="ta" style="min-height:120px;color:var(--faint)">⌨ 에디터(위지윅) 영역 — 이미지·서식 지원</div>';
@@ -567,11 +583,11 @@ function fieldInput(type,ph){
   case 'chips':return '<span style="display:flex;gap:6px;flex-wrap:wrap">'+(ph||'A·B·C').split('·').map((t,i)=>'<span class="pill '+(i%2?'p-info':'p-ok')+'">'+t+'</span>').join('')+'</span>';
   case 'table':return '<div class="ta" style="min-height:58px;color:var(--faint)">옵션값 입력 → 조합 자동 생성 · 조합별 추가금액/재고</div>';
   case 'iplist':return '<div style="display:flex;gap:6px"><input class="inp wide" placeholder="예) 211.36.120.5"> <button class="btn sm" data-act="save">추가</button></div><div class="hint">등록된 IP 목록이 아래 표로 표시됩니다.</div>';
-  default:return '<input class="inp wide" placeholder="'+(ph||'입력')+'">';
+  default:return '<input class="inp wide" value="'+v+'" placeholder="'+(ph||'입력')+'">';
  }
 }
 function renderForm(s){
- let secs=s.sections.map(sec=>`<div class="card"><div class="card-h"><h3><span class="dot"></span>${sec.t}</h3></div><div class="card-b flush"><table class="form-tbl"><tbody>${sec.f.map(f=>`<tr><th>${f[0]}${f[3]?'<span class="req">*</span>':''}</th><td>${fieldInput(f[1],f[2])}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
+ let secs=s.sections.map(sec=>`<div class="card"><div class="card-h"><h3><span class="dot"></span>${sec.t}</h3></div><div class="card-b flush"><table class="form-tbl"><tbody>${sec.f.map(f=>`<tr><th>${f[0]}${f[3]?'<span class="req">*</span>':''}</th><td>${fieldInput(f[1],f[2],f[4])}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
  let bal=s.smsBalance?`<div class="grid stat-row" style="margin-bottom:18px"><div class="stat"><div class="k">SMS(단문)</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">LMS(장문)</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">알림톡</div><div class="v tnum">0 <span style="font-size:14px;color:var(--muted)">건</span></div></div><div class="stat"><div class="k">문자 충전</div><div class="v" style="font-size:16px;margin-top:11px"><button class="btn sm pri" data-act="save">충전하기</button></div></div></div>`:'';
  let extra=s.extraBtns?`<div class="toolbar" style="margin-bottom:18px"><div class="sp"></div>${s.extraBtns.map(b=>`<button class="btn ${b[1]||'ghost'}" ${b[2]?`data-go="${b[2]}"`:'data-act="save"'}>${b[0]}</button>`).join('')}</div>`:'';
  let foot=s.foot?`<div class="card"><div class="form-foot">${s.foot.map((b,i)=>`<button class="btn ${i===0?'pri':''}" style="min-width:110px" data-act="save">${b}</button>`).join('')}</div></div>`:'';

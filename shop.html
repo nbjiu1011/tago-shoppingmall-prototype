@@ -321,24 +321,48 @@ footer .co{font-size:11.5px;color:var(--muted);line-height:1.8}
 @media (max-width:760px){
   .grid{grid-template-columns:repeat(2,1fr);gap:20px 14px}
   .catq{grid-template-columns:repeat(3,1fr)}
-  .cs,.search{flex:none;width:auto}
-  .head .wrap{flex-wrap:wrap;justify-content:center;gap:12px}
-  .search{width:100%}.search .box{width:100%}
+  .cs,.search{flex:none}
+  .head .wrap{flex-wrap:wrap;justify-content:center;gap:10px;padding-top:16px;padding-bottom:16px}
+  .logo{order:1}.cs{order:2;text-align:center}.search{order:3;width:100%}
+  .search .box{width:100%}
   .gnb .wrap{display:none}
-  .gnb-mob{display:flex;align-items:center;justify-content:space-between;height:48px}
+  .gnb .wrap.gnb-mob{display:flex;align-items:center;justify-content:space-between;height:46px}
   .gnb-mob button{background:0;border:0;color:var(--ink);font-family:var(--disp);font-weight:600;letter-spacing:.06em}
   .pay-opts{grid-template-columns:repeat(2,1fr)}
   .mp-cards{grid-template-columns:repeat(2,1fr)}
-  footer .wrap{grid-template-columns:1fr}
-  .frow>label{width:92px}
+  footer .wrap{grid-template-columns:1fr;gap:22px}
+  .page-title h1{font-size:23px}.ttl2{font-size:19px}
+  .hero{height:clamp(300px,74vw,420px)}
+  .hero .panel{margin:0 16px;max-width:none;width:calc(100% - 32px);padding:26px 22px}
+  .hero .panel .en{font-size:26px}
+  .dtabs{font-size:11px}.dtabs button{padding:12px 3px;letter-spacing:0}
+  .sumbar{gap:8px 16px;padding:16px}.sumbar .cell .v{font-size:18px}
+  .pd-dl{grid-template-columns:78px 1fr}
 }
-@media (max-width:420px){.grid{grid-template-columns:1fr}.pd-btns{grid-template-columns:1fr}}
+@media (max-width:560px){
+  .util .wrap{gap:8px;height:34px}
+  .util{font-size:10px}
+  .util .sepd{display:none}
+  .bookmark-u{display:none}
+}
+@media (max-width:440px){
+  .grid{grid-template-columns:1fr}
+  .pd-btns{grid-template-columns:1fr}
+  .catq{grid-template-columns:repeat(2,1fr)}
+  .frow{flex-direction:column;gap:6px}
+  .frow>label{width:auto;padding-top:0}
+  .steps{font-size:10px}.steps .arw{margin:0 7px}.steps .st .n{width:20px;height:20px}
+  .logo .wm{font-size:21px}
+  .cart-prod .th{width:46px;height:58px}
+  tbody td,thead th{padding:10px 7px;font-size:12px}
+  .page-title h1{font-size:20px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="util"><div class="wrap">
-  <button data-go="customer">BOOKMARK</button>
+  <button class="bookmark-u" data-go="customer">BOOKMARK</button>
   <div class="sp"></div>
   <button data-go="login">LOGIN</button><span class="sepd">|</span>
   <button data-go="join">JOIN</button><span class="sepd">|</span>
@@ -348,7 +372,7 @@ footer .co{font-size:11.5px;color:var(--muted);line-height:1.8}
 </div></div>
 
 <header class="head"><div class="wrap">
-  <div class="cs"><div class="lb">CS CENTER</div><div class="num">1544-0835</div></div>
+  <div class="cs"><div class="lb">CS CENTER</div><div class="num">1644-5805</div></div>
   <a class="logo" data-go="home" href="#home">
     <svg width="26" height="26" viewBox="0 0 28 28"><rect width="28" height="28" rx="7" fill="#17171a"/><path d="M15 6.2h-4.3A1.6 1.6 0 009.1 7.8v4.3a1.6 1.6 0 00.47 1.13l5.6 5.6a1.6 1.6 0 002.26 0l4.1-4.1a1.6 1.6 0 000-2.26l-5.6-5.6A1.6 1.6 0 0015 6.2z" fill="#fff"/><circle cx="11.6" cy="9.9" r="1.15" fill="#17171a"/><circle cx="21.2" cy="6.8" r="4.5" fill="#5aa85f" stroke="#fff" stroke-width="1.5"/><path d="M21.2 4.8v4M19.2 6.8h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
     <span class="wm">tagoplus</span>
@@ -364,9 +388,9 @@ footer .co{font-size:11.5px;color:var(--muted);line-height:1.8}
 
 <footer>
   <div class="wrap">
-    <div class="cs2"><h4>CUSTOMER CENTER</h4><div class="num">1544-0835</div><div class="t">평일 10:00 ~ 17:00 (점심 12:00~13:00)<br>주말·공휴일 휴무<br>무통장 입금계좌 : 국민 123-45-678900 (주)tagoplus</div></div>
+    <div class="cs2"><h4>CUSTOMER CENTER</h4><div class="num">1644-5805</div><div class="t">평일 10:00 ~ 17:00 (점심 12:00~13:00)<br>주말·공휴일 휴무<br>E. admin@tagoplus.co.kr<br>무통장 입금계좌 : 국민 123-45-678900 (주)타고플러스</div></div>
     <div><h4>SHOP MENU</h4><ul><li data-go="cat-OUTER">신상품</li><li data-go="cat-TOP">베스트</li><li data-go="cat-ACCESSORY">세일</li><li data-go="cart">장바구니</li><li data-go="mypage">마이페이지</li><li data-go="customer">고객센터</li></ul></div>
-    <div class="co"><h4>COMPANY INFO</h4>상호 (주)tagoplus &nbsp;|&nbsp; 대표 이범재<br>사업자등록번호 107-86-87689<br>통신판매업신고 제19-5147호<br>주소 서울시 영등포구 버드나루로 135, 8층<br>개인정보관리책임자 최병국 &nbsp;|&nbsp; TEL 1544-0835</div>
+    <div class="co"><h4>COMPANY INFO</h4>상호 (주)타고플러스 &nbsp;|&nbsp; 대표 이범재<br>사업자등록번호 107-86-87689<br>통신판매업신고 제19-5147호<br>주소 서울시 영등포구 버드나루로 135, 8층<br>TEL 1644-5805 &nbsp;|&nbsp; E. admin@tagoplus.co.kr</div>
   </div>
   <div class="copy"><div class="wrap">COPYRIGHT © TAGOPLUS. ALL RIGHTS RESERVED. · 사용자 화면 프로토타입 (shop1.sinbiweb.net IA 기준)</div></div>
 </footer>
@@ -534,7 +558,7 @@ function vOrder(){
    <div class="form-sec"><h3>주문자 정보</h3>
      <div class="frow"><label>이름 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="주문자 이름"></div></div>
      <div class="frow"><label>휴대폰 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="010-0000-0000"></div></div>
-     <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="email@tagoplus.com"></div></div>
+     <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="example@tagoplus.co.kr"></div></div>
    </div>
    <div class="form-sec"><h3>배송지 정보</h3>
      <div class="frow"><label>받는분 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="수령인"></div></div>
@@ -591,7 +615,7 @@ function joinForm(){
    <div class="frow"><label>비밀번호 확인 <span class="req">*</span></label><div class="fctl"><input class="inp" type="password" placeholder="비밀번호 재입력"></div></div>
    <div class="frow"><label>이름 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="이름"></div></div>
    <div class="frow"><label>휴대폰 <span class="req">*</span></label><div class="fctl"><input class="inp" placeholder="010-0000-0000"></div></div>
-   <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="email@tagoplus.com"></div></div>
+   <div class="frow"><label>이메일</label><div class="fctl"><input class="inp" placeholder="example@tagoplus.co.kr"></div></div>
    <div class="frow"><label>주소</label><div class="fctl"><div class="row-inline"><input class="inp" style="max-width:130px" placeholder="우편번호"><button class="btn sm" data-act="toast" data-msg="우편번호 찾기">우편번호 찾기</button></div><input class="inp" placeholder="기본주소"><input class="inp" placeholder="상세주소"></div></div>
  </div>
  <div class="form-sec"><h3>부가 정보</h3>
@@ -608,7 +632,7 @@ let mpTab='주문내역';
 function vMypage(){
  const menu=[['주문내역','3'],['적립금','1,250'],['관심상품','5'],['쿠폰','1'],['1:1 문의','0'],['회원정보수정','']];
  return `<div class="ttl2">MY PAGE</div>${spec('마이페이지 — 주문·적립금·관심상품·문의·회원정보',['주문내역 및 배송현황 조회','적립금/쿠폰 확인','관심상품(찜), 1:1 문의','회원정보 수정'])}
- <div class="mp"><div class="mp-side"><div class="u"><b>최고객님</b><div class="g">일반회원 · welcome@tagoplus</div></div>${menu.map(m=>`<button class="${m[0]===mpTab?'on':''}" data-mptab="${m[0]}">${m[0]} ${m[1]?`<span class="b tnum">${m[1]}</span>`:''}</button>`).join('')}</div>
+ <div class="mp"><div class="mp-side"><div class="u"><b>최고객님</b><div class="g">일반회원 · welcome@tagoplus.co.kr</div></div>${menu.map(m=>`<button class="${m[0]===mpTab?'on':''}" data-mptab="${m[0]}">${m[0]} ${m[1]?`<span class="b tnum">${m[1]}</span>`:''}</button>`).join('')}</div>
  <div class="mp-main">${mpContent()}</div></div>`;
 }
 function mpContent(){
@@ -620,7 +644,7 @@ function mpContent(){
  }
  if(mpTab==='관심상품')return grid(PRODUCTS.filter(p=>p.badges.includes('best')).slice(0,4));
  if(mpTab==='적립금')return `<div class="mp-cards"><div class="c"><div class="l">보유 적립금</div><div class="v tnum" style="color:var(--point)">1,250</div></div><div class="c"><div class="l">총 적립</div><div class="v tnum">4,300</div></div><div class="c"><div class="l">사용</div><div class="v tnum">3,050</div></div><div class="c"><div class="l">소멸예정</div><div class="v tnum">0</div></div></div><div class="tbl-wrap"><table><thead><tr><th>일자</th><th>내용</th><th class="right">변동</th><th class="right">잔액</th></tr></thead><tbody><tr><td class="center">2026-08-12</td><td>구매확정 적립</td><td class="right" style="color:var(--new)">+980</td><td class="right tnum">1,250</td></tr><tr><td class="center">2026-07-20</td><td>주문 사용</td><td class="right" style="color:var(--point)">-500</td><td class="right tnum">270</td></tr></tbody></table></div>`;
- if(mpTab==='회원정보수정')return `<div class="form-sec"><h3>회원 정보</h3><div class="frow"><label>아이디</label><div class="fctl"><input class="inp" value="welcome" disabled style="max-width:220px"></div></div><div class="frow"><label>이름</label><div class="fctl"><input class="inp" value="최고객" style="max-width:220px"></div></div><div class="frow"><label>휴대폰</label><div class="fctl"><input class="inp" value="010-1234-5678" style="max-width:220px"></div></div><div class="frow"><label>이메일</label><div class="fctl"><input class="inp" value="welcome@tagoplus.com"></div></div></div><div style="padding:16px 0"><button class="btn dark" data-act="toast" data-msg="회원정보 저장">저장</button></div>`;
+ if(mpTab==='회원정보수정')return `<div class="form-sec"><h3>회원 정보</h3><div class="frow"><label>아이디</label><div class="fctl"><input class="inp" value="welcome" disabled style="max-width:220px"></div></div><div class="frow"><label>이름</label><div class="fctl"><input class="inp" value="최고객" style="max-width:220px"></div></div><div class="frow"><label>휴대폰</label><div class="fctl"><input class="inp" value="010-1234-5678" style="max-width:220px"></div></div><div class="frow"><label>이메일</label><div class="fctl"><input class="inp" value="welcome@tagoplus.co.kr"></div></div></div><div style="padding:16px 0"><button class="btn dark" data-act="toast" data-msg="회원정보 저장">저장</button></div>`;
  return `<div class="empty">${mpTab} 내역이 없습니다.</div>`;
 }
 

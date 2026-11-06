@@ -6,8 +6,16 @@ tagoplus 쇼핑몰 **전체 기획서 겸 HTML 프로토타입**입니다.
 ## 구성
 | 파일 | 화면 | 설명 |
 |------|------|------|
-| `index.html` | 관리자(Admin) | 10개 대메뉴 / 약 44개 화면 — 주문·상품·회원·프로모션·디자인·게시판·매출·접속통계·환경설정 |
-| `shop.html` | 사용자(Storefront) | 홈·카테고리·상품상세·장바구니·주문·로그인·회원가입·마이페이지·고객센터 |
+| `index.html` | 플랫폼 관리자 + 판매자센터 | 입점형 기준. 플랫폼 12개 대메뉴 50개 화면, 판매자센터 15개 화면. 프로필 메뉴에서 역할별 권한 전환 |
+| `shop.html` | 사용자(Storefront) | 입점형 기준. 홈·카테고리·상품상세·판매자 페이지·장바구니·주문·로그인·회원가입·마이페이지·고객센터 |
+| `standalone/index.html` | 독립몰 관리자 | 고객사 한 곳이 자기 상품을 직접 판매하는 버전. 입점·판매자센터·정산·상품 승인 제외, 46개 화면. 상품관리는 섹션형 등록·옵션 조합·고시정보·재고·엑셀 일괄등록 포함 |
+| `standalone/shop.html` | 독립몰 사용자 | 입점 브랜드·판매자 페이지 제외, 배송비 정책 하나로 계산 |
+
+## 기획서
+| 버전 | 관리자 | 사용자 |
+|------|--------|--------|
+| 입점형 | [관리자 전체 기획서](https://claude.ai/artifact/2t2dGda7gNGyQ1EGmnfum4) | [사용자 전체 기획서](https://claude.ai/artifact/SwDqbwdHwUzdnBPcNVHsfP) |
+| 독립몰 | [독립몰 관리자 기획서](https://claude.ai/artifact/SrAkUAmEsGHdKbJP82eBDT) | [독립몰 사용자 기획서](https://claude.ai/artifact/GWeb7PPgjNzVtA4GHQ9hGD) |
 
 ## 열기
 - 로컬: `index.html` / `shop.html`을 브라우저로 열기
